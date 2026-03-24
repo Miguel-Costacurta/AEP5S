@@ -1,5 +1,6 @@
 package model;
 
+import enums.TipoSolicitacao;
 import enums.TipoUsuario;
 
 public class Usuario {
@@ -10,6 +11,8 @@ public class Usuario {
 
     private TipoUsuario tipoUsuario;
 
+    public Usuario(){}
+
     public Usuario(TipoUsuario tipo){
         this.tipoUsuario = tipo;
     }
@@ -19,10 +22,17 @@ public class Usuario {
         this.tipoUsuario = tipo;
     }
 
+    public boolean isAnonimo(){
+        return TipoUsuario.USUARIO_ANONIMO.equals(this.tipoUsuario);
+    }
+
+    public boolean podeCriar(TipoSolicitacao tipoSolicitacao){
+        return this.tipoUsuario.podeCriar(tipoSolicitacao);
+    }
+
     public int getUsuarioId() {
         return usuarioId;
     }
-
     public void setUsuarioId(int usuarioId) {
         this.usuarioId = usuarioId;
     }
@@ -30,7 +40,6 @@ public class Usuario {
     public String getUsuarioNome() {
         return usuarioNome;
     }
-
     public void setUsuarioNome(String usuarioNome) {
         this.usuarioNome = usuarioNome;
     }
@@ -38,7 +47,6 @@ public class Usuario {
     public String getUsuarioEmail() {
         return usuarioEmail;
     }
-
     public void setUsuarioEmail(String usuarioEmail) {
         this.usuarioEmail = usuarioEmail;
     }
@@ -46,7 +54,6 @@ public class Usuario {
     public String getUsuarioDataNascimento() {
         return usuarioDataNascimento;
     }
-
     public void setUsuarioDataNascimento(String usuarioDataNascimento) {
         this.usuarioDataNascimento = usuarioDataNascimento;
     }
@@ -54,7 +61,6 @@ public class Usuario {
     public TipoUsuario getTipoUsuario() {
         return tipoUsuario;
     }
-
     public void setTipoUsuario(TipoUsuario tipoUsuario) {
         this.tipoUsuario = tipoUsuario;
     }
