@@ -1,15 +1,18 @@
 import Util.GeradorProtocolo;
+import enums.TipoSolicitacao;
 import enums.TipoUsuario;
 import model.Solicitacao;
 import model.Usuario;
 
+import java.time.LocalDateTime;
 import java.util.Scanner;
 
 public class Main {
 
     static void main(String[] args) {
 
-        private GeradorProtocolo geradorProtocolo;
+        LocalDateTime data = LocalDateTime.now();
+        GeradorProtocolo protocolo = new GeradorProtocolo(new Usuario());
 
         Scanner scanner = new Scanner(System.in);
 
@@ -33,8 +36,8 @@ public class Main {
                 if (opSolicitacao == 0){
                     System.exit(0);
                 }else {
-                    System.out.printf("Numero do seu protocolo para acompanhar solicitação: %s", geradorProtocolo.getProtocoSolicitacao(););
-                    Solicitacao solicitacao = new Solicitacao(geradorProtocolo.getProtocoSolicitacao(),)
+                    System.out.printf("Numero do seu protocolo para acompanhar solicitação: %s", protocolo.getProtocolo());
+                    Solicitacao solicitacao = new Solicitacao(protocolo.getProtocolo(), opSolicitacao,"Alta","Descricao",12);
                 }
                 break;
             case 2:

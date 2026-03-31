@@ -4,7 +4,7 @@ import enums.TipoSolicitacao;
 import enums.TipoUsuario;
 
 public class Usuario {
-    private int usuarioId;
+    private String usuarioId = java.util.UUID.randomUUID().toString().substring(0,8).toLowerCase();
     private String usuarioNome;
     private String usuarioEmail;
     private String usuarioDataNascimento;
@@ -22,6 +22,10 @@ public class Usuario {
         this.tipoUsuario = tipo;
     }
 
+    public void salvarUsuario(){
+
+    }
+
     public boolean isAnonimo(){
         return TipoUsuario.USUARIO_ANONIMO.equals(this.tipoUsuario);
     }
@@ -30,10 +34,10 @@ public class Usuario {
         return this.tipoUsuario.podeCriar(tipoSolicitacao);
     }
 
-    public int getUsuarioId() {
+    public String getUsuarioId() {
         return usuarioId;
     }
-    public void setUsuarioId(int usuarioId) {
+    public void setUsuarioId(String usuarioId) {
         this.usuarioId = usuarioId;
     }
 

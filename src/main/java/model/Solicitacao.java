@@ -10,9 +10,9 @@ import java.util.Locale;
 public class Solicitacao {
     private int solicitacaoId;
     private String solicitacaoProtocolo;
-    private TipoSolicitacao tipoSolicitacao;
+    private int tipoSolicitacao;
     private StatusSolicitacao statusSolicitacao;
-    private Prioridade prioridade;
+    private String prioridade;
     private String descricao;
     private LocalDateTime dataCriacao;
     private LocalDateTime dataAtualizacao;
@@ -21,7 +21,7 @@ public class Solicitacao {
 
     public Solicitacao(){}
 
-    public Solicitacao(String protocolo, TipoSolicitacao tipoSolicitacao, Prioridade prioridade, String descricao
+    public Solicitacao(String protocolo, int tipoSolicitacao, String prioridade, String descricao
                         ,int usuarioId){
         this.solicitacaoProtocolo = protocolo;
         this.tipoSolicitacao = tipoSolicitacao;
@@ -47,10 +47,10 @@ public class Solicitacao {
         this.solicitacaoProtocolo = solicitacaoProtocolo;
     }
 
-    public TipoSolicitacao getTipoSolicitacao() {
+    public int getTipoSolicitacao() {
         return tipoSolicitacao;
     }
-    public void setTipoSolicitacao(TipoSolicitacao tipoSolicitacao) {
+    public void setTipoSolicitacao(int tipoSolicitacao) {
         this.tipoSolicitacao = tipoSolicitacao;
     }
 
@@ -62,11 +62,11 @@ public class Solicitacao {
         this.dataAtualizacao = LocalDateTime.now();
     }
 
-    public Prioridade getPrioridade() {
+    public String getPrioridade() {
         return prioridade;
     }
 
-    public void setPrioridade(Prioridade prioridade) {
+    public void setPrioridade(String prioridade) {
         this.prioridade = prioridade;
     }
 
