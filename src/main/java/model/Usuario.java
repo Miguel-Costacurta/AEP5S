@@ -3,11 +3,15 @@ package model;
 import enums.TipoSolicitacao;
 import enums.TipoUsuario;
 
+import java.sql.Date;
+import java.time.LocalDateTime;
+
 public class Usuario {
-    private String usuarioId = java.util.UUID.randomUUID().toString().substring(0,8).toLowerCase();
+    private int usuarioId;
     private String usuarioNome;
     private String usuarioEmail;
-    private String usuarioDataNascimento;
+    private LocalDateTime usuarioDataNascimento;
+    private String usuarioSenha;
 
     private TipoUsuario tipoUsuario;
 
@@ -17,13 +21,12 @@ public class Usuario {
         this.tipoUsuario = tipo;
     }
 
-    public Usuario(String nome, TipoUsuario tipo){
+    public Usuario(String nome, TipoUsuario tipo, String usuarioSenha, String usuarioEmail, LocalDateTime usuarioDataNascimento ){
         this.usuarioNome = nome;
         this.tipoUsuario = tipo;
-    }
-
-    public void salvarUsuario(){
-
+        this.usuarioEmail = usuarioEmail;
+        this.usuarioSenha = usuarioSenha;
+        this.usuarioDataNascimento = usuarioDataNascimento;
     }
 
     public boolean isAnonimo(){
@@ -34,10 +37,10 @@ public class Usuario {
         return this.tipoUsuario.podeCriar(tipoSolicitacao);
     }
 
-    public String getUsuarioId() {
+    public int getUsuarioId() {
         return usuarioId;
     }
-    public void setUsuarioId(String usuarioId) {
+    public void setUsuarioId(int usuarioId) {
         this.usuarioId = usuarioId;
     }
 
@@ -55,11 +58,14 @@ public class Usuario {
         this.usuarioEmail = usuarioEmail;
     }
 
-    public String getUsuarioDataNascimento() {
+    public LocalDateTime getUsuarioDataNascimento() {
         return usuarioDataNascimento;
     }
-    public void setUsuarioDataNascimento(String usuarioDataNascimento) {
-        this.usuarioDataNascimento = usuarioDataNascimento;
+
+    public String getUsuarioSenha(){return usuarioSenha;}
+
+    public void setUsuarioSenha(String usuarioSenha) {
+        this.usuarioSenha = usuarioSenha;
     }
 
     public TipoUsuario getTipoUsuario() {

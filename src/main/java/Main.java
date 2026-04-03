@@ -1,4 +1,7 @@
 import Util.GeradorProtocolo;
+import dao.SolicitacaoDAO;
+import db.DataBaseConfig;
+import enums.Prioridade;
 import enums.TipoSolicitacao;
 import enums.TipoUsuario;
 import model.Solicitacao;
@@ -9,7 +12,9 @@ import java.util.Scanner;
 
 public class Main {
 
-    static void main(String[] args) {
+    public static void main(String[] args) {
+
+        DataBaseConfig.initDatabase();
 
         LocalDateTime data = LocalDateTime.now();
         GeradorProtocolo protocolo = new GeradorProtocolo(new Usuario());
@@ -37,7 +42,8 @@ public class Main {
                     System.exit(0);
                 }else {
                     System.out.printf("Numero do seu protocolo para acompanhar solicitação: %s", protocolo.getProtocolo());
-                    Solicitacao solicitacao = new Solicitacao(protocolo.getProtocolo(), opSolicitacao,"Alta","Descricao",12);
+                    Solicitacao solicitacao = new Solicitacao(protocolo.getProtocolo(),TipoSolicitacao.SOLICITACAO_PODA, Prioridade.ALTA, "Bosta" ,usuario.getUsuarioId());
+
                 }
                 break;
             case 2:

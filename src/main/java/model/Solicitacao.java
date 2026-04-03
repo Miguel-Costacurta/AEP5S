@@ -1,27 +1,32 @@
 package model;
 
+import dao.SolicitacaoDAO;
 import enums.Prioridade;
 import enums.StatusSolicitacao;
 import enums.TipoSolicitacao;
 
+import java.sql.Date;
+import java.sql.SQLException;
+import java.time.Instant;
 import java.time.LocalDateTime;
-import java.util.Locale;
 
 public class Solicitacao {
     private int solicitacaoId;
     private String solicitacaoProtocolo;
-    private int tipoSolicitacao;
+    private TipoSolicitacao tipoSolicitacao;
     private StatusSolicitacao statusSolicitacao;
-    private String prioridade;
+    private Prioridade prioridade;
     private String descricao;
-    private LocalDateTime dataCriacao;
+    private Date dataCriacao;
     private LocalDateTime dataAtualizacao;
 
     private int usuarioId;
 
+    private SolicitacaoDAO solicitacaoDAO;
+
     public Solicitacao(){}
 
-    public Solicitacao(String protocolo, int tipoSolicitacao, String prioridade, String descricao
+    public Solicitacao(String protocolo, TipoSolicitacao tipoSolicitacao, Prioridade prioridade, String descricao
                         ,int usuarioId){
         this.solicitacaoProtocolo = protocolo;
         this.tipoSolicitacao = tipoSolicitacao;
@@ -29,7 +34,7 @@ public class Solicitacao {
         this.prioridade = prioridade;
         this.descricao = descricao;
         this.usuarioId = usuarioId;
-        this.dataCriacao = LocalDateTime.now();
+        this.dataCriacao = (Date) Date.from(Instant.now());
         this.dataAtualizacao = LocalDateTime.now();
     }
 
@@ -47,10 +52,10 @@ public class Solicitacao {
         this.solicitacaoProtocolo = solicitacaoProtocolo;
     }
 
-    public int getTipoSolicitacao() {
+    public TipoSolicitacao getTipoSolicitacao() {
         return tipoSolicitacao;
     }
-    public void setTipoSolicitacao(int tipoSolicitacao) {
+    public void setTipoSolicitacao(TipoSolicitacao tipoSolicitacao) {
         this.tipoSolicitacao = tipoSolicitacao;
     }
 
@@ -62,11 +67,11 @@ public class Solicitacao {
         this.dataAtualizacao = LocalDateTime.now();
     }
 
-    public String getPrioridade() {
+    public Prioridade getPrioridade() {
         return prioridade;
     }
 
-    public void setPrioridade(String prioridade) {
+    public void setPrioridade(Prioridade prioridade) {
         this.prioridade = prioridade;
     }
 
@@ -78,11 +83,11 @@ public class Solicitacao {
         this.descricao = descricao;
     }
 
-    public LocalDateTime getDataCriacao() {
+    public Date getDataCriacao() {
         return dataCriacao;
     }
 
-    public void setDataCriacao(LocalDateTime dataCriacao) {
+    public void setDataCriacao(Date dataCriacao) {
         this.dataCriacao = dataCriacao;
     }
 
@@ -100,5 +105,9 @@ public class Solicitacao {
 
     public void setUsuarioId(int usuarioId) {
         this.usuarioId = usuarioId;
+    }
+
+    public void criarSolicitacaoBanco(Solicitacao solicitacao) throws SQLException {
+        solicitacaoDAO.criarSolicitacao(solicitacao);
     }
 }

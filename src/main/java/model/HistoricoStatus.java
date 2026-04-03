@@ -14,9 +14,9 @@ public class HistoricoStatus {
 
     private int usuarioId;
 
-    private HistoricoStatus(){}
+    public HistoricoStatus(){}
 
-    private HistoricoStatus(int solicitacaoId, StatusSolicitacao statusAnterior, StatusSolicitacao statusAtual,
+    public HistoricoStatus(int solicitacaoId, StatusSolicitacao statusAnterior, StatusSolicitacao statusAtual,
                             String observacao, int usuarioId){
 
         this.solicitacaoId = solicitacaoId;
