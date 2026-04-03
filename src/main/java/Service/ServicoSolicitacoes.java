@@ -1,9 +1,12 @@
 package Service;
 
 import dao.ComentarioDAO;
+import dao.HistoricoStatusDAO;
+import dao.SolicitacaoDAO;
 import enums.StatusSolicitacao;
 import enums.TipoUsuario;
 import model.Comentario;
+import model.HistoricoStatus;
 import model.Solicitacao;
 import model.Usuario;
 
@@ -12,6 +15,8 @@ import java.sql.SQLOutput;
 
 public class ServicoSolicitacoes {
     private ComentarioDAO comentarioDAO = new ComentarioDAO();
+    private SolicitacaoDAO solicitacaoDAO = new SolicitacaoDAO();
+    private HistoricoStatusDAO historicoDAO = new HistoricoStatusDAO();
 
     public void adicionarComentario(Solicitacao solicitacao, Usuario usuario, String texto) throws SQLException {
         if (usuario.isAnonimo()) {
@@ -30,20 +35,29 @@ public class ServicoSolicitacoes {
         comentarioDAO.registrar(comentario);
     }
 
-    public void mudarStatus(Solicitacao solicitacao, StatusSolicitacao novoStatus, Usuario responsavel, String observacao){
-        if(!solicitacao.getStatusSolicitacao().podeMudar(novoStatus)){
-            System.out.println("Não é possível alterar para esse status");
+    public void mudarStatus(Solicitacao solicitacao, StatusSolicitacao novoStatus,
+                            Usuario responsavel, String observacao) throws SQLException {
+
+        if (!solicitacao.getStatusSolicitacao().podeMudar(novoStatus)) {
+            throw new IllegalStateException("Transição inválida: "
+                    + solicitacao.getStatusSolicitacao() + " → " + novoStatus);
+        }
+        if (novoStatus == StatusSolicitacao.CANCELADA && !responsavel.getTipoUsuario().podeCancelar()) {
+            throw new IllegalStateException("Apenas gestores podem cancelar.");
+        }
+        if (!responsavel.getTipoUsuario().podeAtender()) {
+            throw new IllegalStateException("Apenas atendentes ou gestores podem alterar o status.");
         }
 
-        if(novoStatus == StatusSolicitacao.CANCELADA && !responsavel.getTipoUsuario().podeCancelar()){
-            System.out.println("Apenas gestores podem cancelar uma solicitação");
-        }
+        StatusSolicitacao statusAnterior = solicitacao.getStatusSolicitacao();
+        solicitacao.setStatusSolicitacao(novoStatus); // já atualiza dataAtualizacao
 
-        if(!responsavel.getTipoUsuario().podeAtender()){
-            System.out.println("Apenas atendentes ou gestores podem alterar o status");
-        }
+        solicitacaoDAO.atualizarStatus(solicitacao);
 
-
-
+        HistoricoStatus historico = new HistoricoStatus(
+                solicitacao.getSolicitacaoId(), statusAnterior, novoStatus,
+                observacao, responsavel.getUsuarioId()
+        );
+        historicoDAO.registrar(historico);
     }
 }

@@ -7,6 +7,7 @@ import model.Solicitacao;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.sql.Timestamp;
 
 public class SolicitacaoDAO {
     private String statusSolicitacao;
@@ -28,6 +29,17 @@ public class SolicitacaoDAO {
             pstmt.setString(4,statusSolicitacao);
             pstmt.setDate(5,solicitacao.getDataCriacao());
 
+            pstmt.executeUpdate();
+        }
+    }
+
+    public void atualizarStatus(Solicitacao s) throws SQLException {
+        String sql = "UPDATE solicitacoes SET status = ?, data_atualizacao = ? WHERE id = ?";
+        try (Connection conn = DataBaseConfig.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setString(1, s.getStatusSolicitacao().name());
+            pstmt.setTimestamp(2, Timestamp.valueOf(s.getDataAtualizacao()));
+            pstmt.setInt(3, s.getSolicitacaoId());
             pstmt.executeUpdate();
         }
     }
