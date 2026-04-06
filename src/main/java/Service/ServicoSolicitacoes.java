@@ -11,7 +11,6 @@ import model.Solicitacao;
 import model.Usuario;
 
 import java.sql.SQLException;
-import java.sql.SQLOutput;
 
 public class ServicoSolicitacoes {
     private ComentarioDAO comentarioDAO = new ComentarioDAO();
@@ -32,6 +31,7 @@ public class ServicoSolicitacoes {
                 usuario.getUsuarioId(),
                 texto
         );
+
         comentarioDAO.registrar(comentario);
     }
 
@@ -40,24 +40,30 @@ public class ServicoSolicitacoes {
 
         if (!solicitacao.getStatusSolicitacao().podeMudar(novoStatus)) {
             throw new IllegalStateException("Transição inválida: "
-                    + solicitacao.getStatusSolicitacao() + " → " + novoStatus);
+                    + solicitacao.getStatusSolicitacao() + " -> " + novoStatus);
         }
+
         if (novoStatus == StatusSolicitacao.CANCELADA && !responsavel.getTipoUsuario().podeCancelar()) {
             throw new IllegalStateException("Apenas gestores podem cancelar.");
         }
+
         if (!responsavel.getTipoUsuario().podeAtender()) {
             throw new IllegalStateException("Apenas atendentes ou gestores podem alterar o status.");
         }
 
         StatusSolicitacao statusAnterior = solicitacao.getStatusSolicitacao();
-        solicitacao.setStatusSolicitacao(novoStatus); // já atualiza dataAtualizacao
+        solicitacao.setStatusSolicitacao(novoStatus);
 
         solicitacaoDAO.atualizarStatus(solicitacao);
 
         HistoricoStatus historico = new HistoricoStatus(
-                solicitacao.getSolicitacaoId(), statusAnterior, novoStatus,
-                observacao, responsavel.getUsuarioId()
+                solicitacao.getSolicitacaoId(),
+                statusAnterior,
+                novoStatus,
+                observacao,
+                responsavel.getUsuarioId()
         );
+
         historicoDAO.registrar(historico);
     }
 }
