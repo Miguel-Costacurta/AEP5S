@@ -34,7 +34,7 @@ public class Solicitacao {
         this.prioridade = prioridade;
         this.descricao = descricao;
         this.usuarioId = usuarioId;
-        this.dataCriacao = (Date) Date.from(Instant.now());
+        this.dataCriacao = new java.sql.Date(System.currentTimeMillis());
         this.dataAtualizacao = LocalDateTime.now();
     }
 

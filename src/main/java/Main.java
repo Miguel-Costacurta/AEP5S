@@ -269,6 +269,131 @@ public class Main {
             case 0 -> System.out.println("Encerrando sistema...");
             default -> System.out.println("Opção inválida.");
         }
+        SolicitacaoDAO solicitacaoDAO2 = new SolicitacaoDAO();
+        ServicoSolicitacoes servico = new ServicoSolicitacoes();
+        HistoricoStatusDAO historicoDAO = new HistoricoStatusDAO();
+        ComentarioDAO comentarioDAO2 = new ComentarioDAO();
+        int opcao = -1;
+
+        while (opcao != 0) {
+            System.out.println("\n--- Menu de Acompanhamento ---");
+            System.out.println("1 - Buscar solicitacao por protocolo");
+            System.out.println("2 - Atualizar status de solicitacao");
+            System.out.println("3 - Ver historico de alteracoes e comentarios");
+            System.out.println("0 - Sair");
+
+            opcao = scanner.nextInt();
+            scanner.nextLine();
+
+            switch (opcao) {
+                case 1 -> {
+                    System.out.println("Digite o numero do protocolo:");
+                    String prot = scanner.nextLine();
+                    try {
+                        Solicitacao encontrada = solicitacaoDAO2.buscarPorProtocolo(prot);
+                        if (encontrada != null) {
+                            System.out.println("Solicitacao encontrada!");
+                            System.out.println("Protocolo: " + encontrada.getSolicitacaoProtocolo());
+                            System.out.println("Tipo: " + encontrada.getTipoSolicitacao());
+                            System.out.println("Status: " + encontrada.getStatusSolicitacao());
+                            System.out.println("Prioridade: " + encontrada.getPrioridade());
+                            System.out.println("Descricao: " + encontrada.getDescricao());
+                        } else {
+                            System.out.println("Nenhuma solicitacao encontrada com esse protocolo.");
+                        }
+                    } catch (SQLException e) {
+                        System.out.println("Erro ao buscar: " + e.getMessage());
+                    }
+                }
+
+                case 2 -> {
+                    System.out.println("Digite o protocolo da solicitacao:");
+                    String protStatus = scanner.nextLine();
+                    try {
+                        Solicitacao sol = solicitacaoDAO2.buscarPorProtocolo(protStatus);
+                        if (sol == null) {
+                            System.out.println("Solicitacao nao encontrada.");
+                            break;
+                        }
+                        System.out.println("Status atual: " + sol.getStatusSolicitacao());
+                        System.out.println("Escolha o novo status:");
+                        System.out.println("1 - EM_ATENDIMENTO");
+                        System.out.println("2 - AGUARDANDO_RESPOSTA");
+                        System.out.println("3 - CONCLUIDA");
+                        System.out.println("4 - CANCELADA");
+
+                        int opStatus = scanner.nextInt();
+                        scanner.nextLine();
+
+                        StatusSolicitacao novoStatus = switch (opStatus) {
+                            case 1 -> StatusSolicitacao.EM_ATENDIMENTO;
+                            case 2 -> StatusSolicitacao.AGUARDANDO_RESPOSTA;
+                            case 3 -> StatusSolicitacao.CONCLUIDA;
+                            case 4 -> StatusSolicitacao.CANCELADA;
+                            default -> null;
+                        };
+
+                        if (novoStatus == null) {
+                            System.out.println("Opcao invalida.");
+                            break;
+                        }
+
+                        System.out.println("Motivo da alteracao:");
+                        String motivo = scanner.nextLine();
+
+                        Usuario atendente = new Usuario(TipoUsuario.USUARIO_ATENDENTE);
+                        servico.mudarStatus(sol, novoStatus, atendente, motivo);
+                        System.out.println("Status atualizado para: " + novoStatus);
+
+                    } catch (IllegalStateException e) {
+                        System.out.println("Erro: " + e.getMessage());
+                    } catch (SQLException e) {
+                        System.out.println("Erro no banco: " + e.getMessage());
+                    }
+                }
+
+                case 3 -> {
+                    System.out.println("Digite o protocolo da solicitacao:");
+                    String protLog = scanner.nextLine();
+                    try {
+                        Solicitacao solLog = solicitacaoDAO2.buscarPorProtocolo(protLog);
+                        if (solLog == null) {
+                            System.out.println("Solicitacao nao encontrada.");
+                            break;
+                        }
+
+                        List<HistoricoStatus> historicos = historicoDAO.buscarPorSolicitacao(solLog.getSolicitacaoId());
+                        System.out.println("\n--- Historico de Status ---");
+                        if (historicos.isEmpty()) {
+                            System.out.println("Nenhuma alteracao de status registrada.");
+                        } else {
+                            for (HistoricoStatus h : historicos) {
+                                System.out.println(h.getDataAlteracao() + " | "
+                                        + h.getStatusAnterior() + " -> " + h.getStatusAtual()
+                                        + " | " + h.getObservacao());
+                            }
+                        }
+
+                        List<Comentario> comentarios = comentarioDAO2.buscarPorSolicitacao(solLog.getSolicitacaoId());
+                        System.out.println("\n--- Comentarios ---");
+                        if (comentarios.isEmpty()) {
+                            System.out.println("Nenhum comentario registrado.");
+                        } else {
+                            for (Comentario c : comentarios) {
+                                System.out.println(c.getDataCriacao() + " | Usuario " + c.getUsuarioId()
+                                        + ": " + c.getTexto());
+                            }
+                        }
+
+                    } catch (SQLException e) {
+                        System.out.println("Erro no banco: " + e.getMessage());
+                    }
+                }
+
+                case 0 -> System.out.println("Saindo...");
+                default -> System.out.println("Opcao invalida.");
+            }
+        }
     }
 
     public static TipoSolicitacao escolherTipoSolicitacao(Scanner scanner, Usuario usuario) {

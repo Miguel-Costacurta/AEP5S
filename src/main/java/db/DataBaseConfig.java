@@ -8,7 +8,7 @@ import java.sql.Statement;
 public class DataBaseConfig {
     private static final String user = "root";
     private static final String password = "sa";
-    private static final String url = "jdbc:h2:mem:testdb";
+    private static final String url = "jdbc:h2:mem:testdb;DB_CLOSE_DELAY=-1";
 
     public static Connection getConnection() throws SQLException{
         return DriverManager.getConnection(url,user,password);
