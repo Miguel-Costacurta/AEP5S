@@ -3,10 +3,7 @@ package dao;
 import db.DataBaseConfig;
 import model.Usuario;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -14,7 +11,7 @@ public class UsuarioDAO {
     private String tipoUsuario;
 
     public void salvarUsuario(Usuario usuario) throws SQLException {
-        String sql = "INSERT INTO users (id, nome, email, tipo, senha) VALUES (?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO users (nome, email, tipo, senha) VALUES (?, ?, ?, ?)";
 
         switch (usuario.getTipoUsuario()){
             case USUARIO_ANONIMO -> tipoUsuario = "Anonimo";
@@ -27,15 +24,19 @@ public class UsuarioDAO {
         }
 
         try(Connection conn = DataBaseConfig.getConnection();
-            PreparedStatement pstmt = conn.prepareStatement(sql)){
+            PreparedStatement pstmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)){
 
-            pstmt.setInt(1, usuario.getUsuarioId());
-            pstmt.setString(2, usuario.getUsuarioNome());
-            pstmt.setString(3, usuario.getUsuarioEmail());
-            pstmt.setString(4, tipoUsuario);
-            pstmt.setString(5, usuario.getUsuarioSenha());
+            pstmt.setString(1, usuario.getUsuarioNome());
+            pstmt.setString(2, usuario.getUsuarioEmail());
+            pstmt.setString(3, tipoUsuario);
+            pstmt.setString(4, usuario.getUsuarioSenha());
 
             pstmt.executeUpdate();
+
+            ResultSet rs = pstmt.getGeneratedKeys();
+            if (rs.next()) {
+                usuario.setUsuarioId(rs.getInt(1));
+            }
         }
     }
 

@@ -17,7 +17,7 @@ public class DataBaseConfig {
     public static void initDatabase() {
         String sqlUsers = """
             CREATE TABLE IF NOT EXISTS users (
-                id INT PRIMARY KEY,
+                id INT PRIMARY KEY AUTO_INCREMENT,
                 nome VARCHAR(100),
                 email VARCHAR(100),
                 tipo VARCHAR(50),
@@ -73,6 +73,9 @@ public class DataBaseConfig {
             stmt.execute(sqlSolicitacoes);
             stmt.execute(sqlComentarios);
             stmt.execute(sqlHistoricoStatus);
+            stmt.execute("INSERT INTO users (id, nome, email, tipo, senha) " +
+                    "SELECT 0, 'Anonimo', '', 'Anonimo', '' " +
+                    "WHERE NOT EXISTS (SELECT 1 FROM users WHERE id = 0)");
 
         } catch (SQLException e) {
             e.printStackTrace();
