@@ -11,6 +11,9 @@ import enums.TipoUsuario;
 import model.HistoricoStatus;
 import model.Solicitacao;
 import model.Usuario;
+import dao.ComentarioDAO;
+import model.Comentario;
+import java.time.LocalDateTime;
 
 import java.sql.SQLException;
 import java.time.format.DateTimeFormatter;
@@ -34,10 +37,10 @@ public class Main {
 
             while (executando) {
                 System.out.println("\n=== CENTRAL DE SOLICITAÇÕES ===");
-                System.out.println("1 - Fazer solicitação");
-                System.out.println("2 - Área do atendente");
-                System.out.println("3 - Área do gestor");
-                System.out.println("4 - Acompanhar solicitacao existente");
+                System.out.println("1 - Fazer solicitação anônima");
+                System.out.println("2 - Área do usuário comum");
+                System.out.println("3 - Área do atendente");
+                System.out.println("4 - Área do gestor");
                 System.out.println("0 - Sair");
                 System.out.print("Escolha uma opção: ");
 
@@ -45,19 +48,20 @@ public class Main {
 
                 switch (op) {
                     case 1:
-                        menuUsuario(scanner, authService, solicitacaoDAO);
+                        Usuario anonimo = new Usuario(TipoUsuario.USUARIO_ANONIMO);
+                        criarSolicitacao(scanner, solicitacaoDAO, anonimo);
                         break;
 
                     case 2:
-                        menuAtendente(scanner, authService, solicitacaoDAO);
+                        menuUsuario(scanner, authService, solicitacaoDAO);
                         break;
 
                     case 3:
-                        menuGestor(scanner, authService, solicitacaoDAO);
+                        menuAtendente(scanner, authService, solicitacaoDAO);
                         break;
 
                     case 4:
-                        acompanharSolicitacao(scanner, solicitacaoDAO, historicoDAO);
+                        menuGestor(scanner, authService, solicitacaoDAO);
                         break;
 
                     case 0:
@@ -83,10 +87,9 @@ public class Main {
         boolean voltar = false;
 
         while (!voltar) {
-            System.out.println("\n=== ÁREA DE LOGIN ===");
+            System.out.println("\n=== ÁREA DO USUÁRIO ===");
             System.out.println("1 - Login");
             System.out.println("2 - Cadastrar usuário comum");
-            System.out.println("3 - Continuar sem login (Anonimo)");
             System.out.println("0 - Voltar");
             System.out.print("Escolha: ");
 
@@ -100,6 +103,11 @@ public class Main {
                     String senha = scanner.nextLine();
 
                     Usuario usuario = authService.login(email, senha);
+
+                    if (usuario == null || usuario.getTipoUsuario() != TipoUsuario.USUARIO_LOGADO) {
+                        System.out.println("Login inválido para usuário comum.");
+                        break;
+                    }
 
                     boolean menuLogado = true;
                     while (menuLogado) {
@@ -137,14 +145,10 @@ public class Main {
                     authService.cadastrarUsuarioLogado(nome, emailCadastro, senhaCadastro);
                     break;
 
-                case 3:
-                    Usuario usuarioAnonimo = new Usuario(TipoUsuario.USUARIO_ANONIMO);
-                    System.out.println("=== SOLICITACAO ANONIMA ===");
-                    criarSolicitacao(scanner, solicitacaoDAO,usuarioAnonimo );
-                    break;
                 case 0:
                     voltar = true;
                     break;
+
                 default:
                     System.out.println("Opção inválida.");
             }
@@ -429,39 +433,4 @@ public class Main {
             System.out.println("Usuário ID: " + s.getUsuarioId());
         }
     }
-
-    private static void acompanharSolicitacao(Scanner scanner, SolicitacaoDAO solicitacaoDAO, HistoricoStatusDAO historicoStatusDAO) throws SQLException{
-        System.out.print("\nDigite o número do protocolo: ");
-        String protocolo = scanner.nextLine();
-
-        Solicitacao s = solicitacaoDAO.buscarPorProtocolo(protocolo);
-
-        if (s == null) {
-            System.out.println("Protocolo não encontrado.");
-            return;
-        }
-
-        System.out.println("\n=== SOLICITAÇÃO ===");
-        System.out.println("Protocolo : " + s.getSolicitacaoProtocolo());
-        System.out.println("Tipo      : " + s.getTipoSolicitacao());
-        System.out.println("Status    : " + s.getStatusSolicitacao());
-        System.out.println("Prioridade: " + s.getPrioridade());
-        System.out.println("Descrição : " + s.getDescricao());
-
-        List<HistoricoStatus> historico = historicoStatusDAO.buscarPorSolicitacao(s.getSolicitacaoId());
-
-        if (historico.isEmpty()) {
-            System.out.println("\nNenhuma movimentação registrada ainda.");
-        } else {
-            System.out.println("\n=== HISTÓRICO ===");
-            for (HistoricoStatus h : historico) {
-                System.out.println("  " + h.getDataAlteracao().format(
-                        DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm"))
-                        + " | " + h.getStatusAnterior()
-                        + " → " + h.getStatusAtual()
-                        + " | " + h.getObservacao());
-            }
-        }
-    }
-
 }
