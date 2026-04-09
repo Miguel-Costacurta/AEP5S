@@ -155,7 +155,6 @@ public class Main {
         while (!voltar) {
             System.out.println("\n=== ÁREA DO ATENDENTE ===");
             System.out.println("1 - Login de atendente");
-            System.out.println("2 - Cadastrar atendente");
             System.out.println("0 - Voltar");
             System.out.print("Escolha: ");
 
@@ -192,14 +191,14 @@ public class Main {
                                 break;
                             case 2:
                                 listarSolicitacoes(solicitacaoDAO.listarPorStatus(StatusSolicitacao.PENDENTE));
-                                System.out.print("ID da solicitação: ");
+                                System.out.print("Digite o ID da solicitação mostrado acima: ");
                                 int idAtender = Integer.parseInt(scanner.nextLine());
                                 solicitacaoDAO.atualizarStatus(idAtender, StatusSolicitacao.EM_ATENDIMENTO);
                                 System.out.println("Solicitação em atendimento.");
                                 break;
                             case 3:
                                 listarSolicitacoes(solicitacaoDAO.listarSolicitacoes());
-                                System.out.print("ID da solicitação: ");
+                                System.out.print("Digite o ID da solicitação mostrado acima: ");
                                 int idConcluir = Integer.parseInt(scanner.nextLine());
                                 solicitacaoDAO.atualizarStatus(idConcluir, StatusSolicitacao.CONCLUIDA);
                                 System.out.println("Solicitação concluída.");
@@ -212,19 +211,6 @@ public class Main {
                                 System.out.println("Opção inválida.");
                         }
                     }
-                    break;
-
-                case 2:
-                    System.out.print("Nome: ");
-                    String nome = scanner.nextLine();
-
-                    System.out.print("Email: ");
-                    String emailCadastro = scanner.nextLine();
-
-                    System.out.print("Senha: ");
-                    String senhaCadastro = scanner.nextLine();
-
-                    authService.cadastrarAtendente(nome, emailCadastro, senhaCadastro);
                     break;
 
                 case 0:
@@ -270,6 +256,7 @@ public class Main {
                         System.out.println("2 - Colocar em atendimento");
                         System.out.println("3 - Concluir");
                         System.out.println("4 - Cancelar");
+                        System.out.println("5 - Cadastrar atendente");
                         System.out.println("0 - Logout");
                         System.out.print("Escolha: ");
 
@@ -281,24 +268,33 @@ public class Main {
                                 break;
                             case 2:
                                 listarSolicitacoes(solicitacaoDAO.listarSolicitacoes());
-                                System.out.print("ID da solicitação: ");
+                                System.out.print("Digite o ID da solicitação mostrado acima: ");
                                 int idAtender = Integer.parseInt(scanner.nextLine());
                                 solicitacaoDAO.atualizarStatus(idAtender, StatusSolicitacao.EM_ATENDIMENTO);
                                 System.out.println("Solicitação em atendimento.");
                                 break;
                             case 3:
                                 listarSolicitacoes(solicitacaoDAO.listarSolicitacoes());
-                                System.out.print("ID da solicitação: ");
+                                System.out.print("Digite o ID da solicitação mostrado acima: ");
                                 int idConcluir = Integer.parseInt(scanner.nextLine());
                                 solicitacaoDAO.atualizarStatus(idConcluir, StatusSolicitacao.CONCLUIDA);
                                 System.out.println("Solicitação concluída.");
                                 break;
                             case 4:
                                 listarSolicitacoes(solicitacaoDAO.listarSolicitacoes());
-                                System.out.print("ID da solicitação: ");
+                                System.out.print("Digite o ID da solicitação mostrado acima: ");
                                 int idCancelar = Integer.parseInt(scanner.nextLine());
                                 solicitacaoDAO.atualizarStatus(idCancelar, StatusSolicitacao.CANCELADA);
                                 System.out.println("Solicitação cancelada.");
+                                break;
+                            case 5:
+                                System.out.print("Nome do atendente: ");
+                                String nomeAtendente = scanner.nextLine();
+                                System.out.print("Email: ");
+                                String emailAtendente = scanner.nextLine();
+                                System.out.print("Senha: ");
+                                String senhaAtendente = scanner.nextLine();
+                                authService.cadastrarAtendente(nomeAtendente, emailAtendente, senhaAtendente);
                                 break;
                             case 0:
                                 menuGestorLogado = false;
@@ -311,16 +307,16 @@ public class Main {
                     break;
 
                 case 2:
-                    System.out.print("Nome: ");
-                    String nome = scanner.nextLine();
+                    System.out.print("Nome do gestor: ");
+                    String nomeGestor = scanner.nextLine();
 
-                    System.out.print("Email: ");
-                    String emailCadastro = scanner.nextLine();
+                    System.out.print("Email do gestor: ");
+                    String emailGestor = scanner.nextLine();
 
-                    System.out.print("Senha: ");
-                    String senhaCadastro = scanner.nextLine();
+                    System.out.print("Senha do gestor: ");
+                    String senhaGestor = scanner.nextLine();
 
-                    authService.cadastrarGestor(nome, emailCadastro, senhaCadastro);
+                    authService.cadastrarGestor(nomeGestor, emailGestor, senhaGestor);
                     break;
 
                 case 0:
