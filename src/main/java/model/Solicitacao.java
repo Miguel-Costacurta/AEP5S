@@ -7,7 +7,6 @@ import enums.TipoSolicitacao;
 
 import java.sql.Date;
 import java.sql.SQLException;
-import java.time.Instant;
 import java.time.LocalDateTime;
 
 public class Solicitacao {
@@ -19,28 +18,27 @@ public class Solicitacao {
     private String descricao;
     private Date dataCriacao;
     private LocalDateTime dataAtualizacao;
-
     private int usuarioId;
 
-    private SolicitacaoDAO solicitacaoDAO;
+    private SolicitacaoDAO solicitacaoDAO = new SolicitacaoDAO();
 
     public Solicitacao(){}
 
-    public Solicitacao(String protocolo, TipoSolicitacao tipoSolicitacao, Prioridade prioridade, String descricao
-                        ,int usuarioId){
+    public Solicitacao(String protocolo, TipoSolicitacao tipoSolicitacao, Prioridade prioridade, String descricao, int usuarioId){
         this.solicitacaoProtocolo = protocolo;
         this.tipoSolicitacao = tipoSolicitacao;
         this.statusSolicitacao = StatusSolicitacao.PENDENTE;
         this.prioridade = prioridade;
         this.descricao = descricao;
         this.usuarioId = usuarioId;
-        this.dataCriacao = (Date) Date.from(Instant.now());
+        this.dataCriacao = new Date(System.currentTimeMillis());
         this.dataAtualizacao = LocalDateTime.now();
     }
 
     public int getSolicitacaoId() {
         return solicitacaoId;
     }
+
     public void setSolicitacaoId(int solicitacaoId) {
         this.solicitacaoId = solicitacaoId;
     }
@@ -48,6 +46,7 @@ public class Solicitacao {
     public String getSolicitacaoProtocolo() {
         return solicitacaoProtocolo;
     }
+
     public void setSolicitacaoProtocolo(String solicitacaoProtocolo) {
         this.solicitacaoProtocolo = solicitacaoProtocolo;
     }
@@ -55,6 +54,7 @@ public class Solicitacao {
     public TipoSolicitacao getTipoSolicitacao() {
         return tipoSolicitacao;
     }
+
     public void setTipoSolicitacao(TipoSolicitacao tipoSolicitacao) {
         this.tipoSolicitacao = tipoSolicitacao;
     }
@@ -62,6 +62,7 @@ public class Solicitacao {
     public StatusSolicitacao getStatusSolicitacao() {
         return statusSolicitacao;
     }
+
     public void setStatusSolicitacao(StatusSolicitacao statusSolicitacao) {
         this.statusSolicitacao = statusSolicitacao;
         this.dataAtualizacao = LocalDateTime.now();
