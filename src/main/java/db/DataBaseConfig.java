@@ -28,6 +28,7 @@ public class DataBaseConfig {
                     ")";
 
             String sqlSolicitacoes = "CREATE TABLE IF NOT EXISTS solicitacoes (" +
+
                     "id INT AUTO_INCREMENT PRIMARY KEY, " +
                     "protocolo VARCHAR(100), " +
                     "tipo VARCHAR(100), " +
@@ -37,8 +38,28 @@ public class DataBaseConfig {
                     "usuario_id INT" +
                     ")";
 
+            String sqlHistorico = "CREATE TABLE IF NOT EXISTS historico_status (" +
+                    "id INT AUTO_INCREMENT PRIMARY KEY, " +
+                    "solicitacao_id INT NOT NULL, " +
+                    "status_anterior VARCHAR(50) NOT NULL, " +
+                    "status_novo VARCHAR(50) NOT NULL, " +
+                    "observacao VARCHAR(500), " +
+                    "data_alteracao TIMESTAMP NOT NULL, " +
+                    "usuario_id INT NOT NULL" +
+                    ")";
+
+            String sqlComentarios = "CREATE TABLE IF NOT EXISTS comentarios (" +
+                    "id INT AUTO_INCREMENT PRIMARY KEY, " +
+                    "solicitacao_id INT NOT NULL, " +
+                    "usuario_id INT NOT NULL, " +
+                    "texto VARCHAR(1000) NOT NULL, " +
+                    "data_criacao TIMESTAMP NOT NULL" +
+                    ")";
+
             stmt.execute(sqlUsers);
             stmt.execute(sqlSolicitacoes);
+            stmt.execute(sqlComentarios);
+            stmt.execute(sqlHistorico);
 
             System.out.println("Banco inicializado com sucesso.");
 
