@@ -9,6 +9,7 @@ import java.sql.Date;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
 
+
 public class Solicitacao {
     private int solicitacaoId;
     private String solicitacaoProtocolo;
@@ -21,6 +22,8 @@ public class Solicitacao {
     private int usuarioId;
 
     private SolicitacaoDAO solicitacaoDAO = new SolicitacaoDAO();
+    private String atribuidoPara;
+
 
     public Solicitacao(){}
 
@@ -110,5 +113,12 @@ public class Solicitacao {
 
     public void criarSolicitacaoBanco(Solicitacao solicitacao) throws SQLException {
         solicitacaoDAO.criarSolicitacao(solicitacao);
+    }
+    public String getAtribuidoPara() {
+        return atribuidoPara;
+    }
+
+    public void setAtribuidoPara(String atribuidoPara) {
+        this.atribuidoPara = atribuidoPara;
     }
 }

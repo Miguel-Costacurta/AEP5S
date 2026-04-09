@@ -33,7 +33,9 @@ public class SolicitacaoDAO {
         String sql = "SELECT * FROM solicitacoes";
         List<Solicitacao> lista = new ArrayList<>();
 
+
         try (Connection conn = DataBaseConfig.getConnection();
+
              PreparedStatement pstmt = conn.prepareStatement(sql);
              ResultSet rs = pstmt.executeQuery()) {
 
@@ -46,11 +48,22 @@ public class SolicitacaoDAO {
                 s.setPrioridade(enums.Prioridade.valueOf(rs.getString("prioridade")));
                 s.setDescricao(rs.getString("descricao"));
                 s.setUsuarioId(rs.getInt("usuario_id"));
-                lista.add(s);
+                s.setAtribuidoPara(rs.getString("atribuido_para"));
             }
         }
 
         return lista;
+    }
+    public void atribuirSolicitacao(int id, String nome) throws SQLException {
+        String sql = "UPDATE solicitacoes SET atribuido_para = ? WHERE id = ?";
+
+        try (Connection conn = DataBaseConfig.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+            pstmt.setString(1, nome);
+            pstmt.setInt(2, id);
+            pstmt.executeUpdate();
+        }
     }
 
     public List<Solicitacao> listarPorStatus(StatusSolicitacao status) throws SQLException {
@@ -72,7 +85,7 @@ public class SolicitacaoDAO {
                     s.setPrioridade(enums.Prioridade.valueOf(rs.getString("prioridade")));
                     s.setDescricao(rs.getString("descricao"));
                     s.setUsuarioId(rs.getInt("usuario_id"));
-                    lista.add(s);
+                    s.setAtribuidoPara(rs.getString("atribuido_para"));
                 }
             }
         }
@@ -98,6 +111,7 @@ public class SolicitacaoDAO {
                     s.setPrioridade(enums.Prioridade.valueOf(rs.getString("prioridade")));
                     s.setDescricao(rs.getString("descricao"));
                     s.setUsuarioId(rs.getInt("usuario_id"));
+                    s.setAtribuidoPara(rs.getString("atribuido_para"));
                     return s;
                 }
             }

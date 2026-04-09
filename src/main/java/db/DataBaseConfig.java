@@ -28,6 +28,7 @@ public class DataBaseConfig {
                     ")";
 
             String sqlSolicitacoes = "CREATE TABLE IF NOT EXISTS solicitacoes (" +
+
                     "id INT AUTO_INCREMENT PRIMARY KEY, " +
                     "protocolo VARCHAR(100), " +
                     "tipo VARCHAR(100), " +
