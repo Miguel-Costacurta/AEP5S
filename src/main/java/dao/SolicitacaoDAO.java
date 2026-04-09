@@ -80,13 +80,13 @@ public class SolicitacaoDAO {
         return lista;
     }
 
-    public Solicitacao buscarPorId(int id) throws SQLException {
-        String sql = "SELECT * FROM solicitacoes WHERE id = ?";
+    public Solicitacao buscarPorProtocolo(String protocolo) throws SQLException {
+        String sql = "SELECT * FROM solicitacoes WHERE protocolo = ?";
 
         try (Connection conn = DataBaseConfig.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
-            pstmt.setInt(1, id);
+            pstmt.setString(1, protocolo);
 
             try (ResultSet rs = pstmt.executeQuery()) {
                 if (rs.next()) {
