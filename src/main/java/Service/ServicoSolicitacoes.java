@@ -52,7 +52,7 @@ public class ServicoSolicitacoes {
         StatusSolicitacao statusAnterior = solicitacao.getStatusSolicitacao();
         solicitacao.setStatusSolicitacao(novoStatus); // já atualiza dataAtualizacao
 
-        solicitacaoDAO.atualizarStatus(solicitacao);
+        solicitacaoDAO.atualizarStatus(solicitacao.getSolicitacaoId(), solicitacao.getStatusSolicitacao());
 
         HistoricoStatus historico = new HistoricoStatus(
                 solicitacao.getSolicitacaoId(), statusAnterior, novoStatus,
