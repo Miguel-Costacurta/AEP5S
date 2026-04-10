@@ -28,15 +28,17 @@ public class DataBaseConfig {
                     ")";
 
             String sqlSolicitacoes = "CREATE TABLE IF NOT EXISTS solicitacoes (" +
-
                     "id INT AUTO_INCREMENT PRIMARY KEY, " +
                     "protocolo VARCHAR(100), " +
                     "tipo VARCHAR(100), " +
                     "status VARCHAR(100), " +
                     "prioridade VARCHAR(50), " +
                     "descricao VARCHAR(255), " +
-                    "usuario_id INT,"+
-                    "atribuir_para VARCHAR(100)"+
+                    "localizacao VARCHAR(255), " +
+                    "prazo TIMESTAMP, " +
+                    "data_criacao TIMESTAMP, " +
+                    "data_atualizacao TIMESTAMP, " +
+                    "usuario_id INT" +
                     ")";
 
             String sqlHistorico = "CREATE TABLE IF NOT EXISTS historico_status (" +
@@ -59,8 +61,8 @@ public class DataBaseConfig {
 
             stmt.execute(sqlUsers);
             stmt.execute(sqlSolicitacoes);
-            stmt.execute(sqlComentarios);
             stmt.execute(sqlHistorico);
+            stmt.execute(sqlComentarios);
 
             System.out.println("Banco inicializado com sucesso.");
 

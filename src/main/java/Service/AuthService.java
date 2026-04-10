@@ -45,8 +45,6 @@ public class AuthService {
         if (usuario == null) {
             System.out.println("Email ou senha inválidos.");
             return null;
-        } else if (usuario.getTipoUsuario() != TipoUsuario.USUARIO_LOGADO) {
-            System.out.println("Tipo de usuario invalido");
         }
         return usuario;
     }

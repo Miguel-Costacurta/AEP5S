@@ -11,33 +11,19 @@ import model.Solicitacao;
 import model.Usuario;
 
 import java.sql.SQLException;
-import java.sql.SQLOutput;
 
 public class ServicoSolicitacoes {
-    private ComentarioDAO comentarioDAO = new ComentarioDAO();
-    private SolicitacaoDAO solicitacaoDAO = new SolicitacaoDAO();
-    private HistoricoStatusDAO historicoDAO = new HistoricoStatusDAO();
-
-    public void adicionarComentario(Solicitacao solicitacao, Usuario usuario, String texto) throws SQLException {
-        if (usuario.isAnonimo()) {
-            throw new IllegalStateException("Usuário anônimo não pode comentar.");
-        }
-
-        if (usuario.getTipoUsuario() == TipoUsuario.USUARIO_GESTOR) {
-            throw new IllegalStateException("Gestor não pode comentar, apenas visualizar.");
-        }
-
-        Comentario comentario = new Comentario(
-                solicitacao.getSolicitacaoId(),
-                usuario.getUsuarioId(),
-                texto
-        );
-        comentarioDAO.registrar(comentario);
-    }
+    private final ComentarioDAO comentarioDAO = new ComentarioDAO();
+    private final SolicitacaoDAO solicitacaoDAO = new SolicitacaoDAO();
+    private final HistoricoStatusDAO historicoDAO = new HistoricoStatusDAO();
 
     public void mudarStatus(Solicitacao solicitacao, StatusSolicitacao novoStatus,
                             Usuario responsavel, String observacao) throws SQLException {
 
+        // Observação obrigatória
+        if (observacao == null || observacao.trim().isEmpty()) {
+            throw new IllegalArgumentException("Observação é obrigatória para alterar o status.");
+        }
         if (!solicitacao.getStatusSolicitacao().podeMudar(novoStatus)) {
             throw new IllegalStateException("Transição inválida: "
                     + solicitacao.getStatusSolicitacao() + " → " + novoStatus);
@@ -50,14 +36,28 @@ public class ServicoSolicitacoes {
         }
 
         StatusSolicitacao statusAnterior = solicitacao.getStatusSolicitacao();
-        solicitacao.setStatusSolicitacao(novoStatus); // já atualiza dataAtualizacao
+        solicitacao.setStatusSolicitacao(novoStatus);
 
-        solicitacaoDAO.atualizarStatus(solicitacao.getSolicitacaoId(), solicitacao.getStatusSolicitacao());
+        solicitacaoDAO.atualizarStatus(solicitacao.getSolicitacaoId(), novoStatus);
 
-        HistoricoStatus historico = new HistoricoStatus(
+        historicoDAO.registrar(new HistoricoStatus(
                 solicitacao.getSolicitacaoId(), statusAnterior, novoStatus,
                 observacao, responsavel.getUsuarioId()
-        );
-        historicoDAO.registrar(historico);
+        ));
+    }
+
+    public void adicionarComentario(Solicitacao solicitacao, Usuario usuario, String texto) throws SQLException {
+        if (usuario.isAnonimo()) {
+            throw new IllegalStateException("Usuário anônimo não pode comentar.");
+        }
+        if (usuario.getTipoUsuario() == TipoUsuario.USUARIO_GESTOR) {
+            throw new IllegalStateException("Gestor não pode comentar, apenas visualizar.");
+        }
+        if (texto == null || texto.trim().isEmpty()) {
+            throw new IllegalArgumentException("Comentário não pode ser vazio.");
+        }
+        comentarioDAO.registrar(new Comentario(
+                solicitacao.getSolicitacaoId(), usuario.getUsuarioId(), texto
+        ));
     }
 }
