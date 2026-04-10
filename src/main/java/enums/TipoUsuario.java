@@ -6,13 +6,13 @@ import java.util.Set;
 
 public enum TipoUsuario {
 
-    USUARIO_LOGADO(Set.of(TipoSolicitacao.DENUNCIA_ASSEDIO, TipoSolicitacao.DENUNCIA_BURACO,TipoSolicitacao.SOLICITACAO_ARVORE_CAIDA,
+    USUARIO_LOGADO(Set.of(TipoSolicitacao.DENUNCIA_MAUS_TRATOS, TipoSolicitacao.DENUNCIA_BURACO,TipoSolicitacao.SOLICITACAO_ARVORE_CAIDA,
                           TipoSolicitacao.SOLICITACAO_PODA, TipoSolicitacao.SOLICITACAO_REFORMA, TipoSolicitacao.SOLICITACAO_ILUMINACAO)),
     USUARIO_ANONIMO(Set.of(TipoSolicitacao.SOLICITACAO_PODA, TipoSolicitacao.DENUNCIA_BURACO, TipoSolicitacao.SOLICITACAO_ARVORE_CAIDA,
                            TipoSolicitacao.SOLICITACAO_ILUMINACAO, TipoSolicitacao.SOLICITACAO_REFORMA)),
     USUARIO_ATENDENTE(Collections.emptySet()),
     USUARIO_GESTOR(Set.of(
-            TipoSolicitacao.DENUNCIA_ASSEDIO,
+            TipoSolicitacao.DENUNCIA_MAUS_TRATOS,
             TipoSolicitacao.DENUNCIA_BURACO,
             TipoSolicitacao.SOLICITACAO_ARVORE_CAIDA,
             TipoSolicitacao.SOLICITACAO_PODA,

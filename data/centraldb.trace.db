@@ -1,0 +1,24 @@
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Column "atribuido_para" not found [42122-240]
+	at org.h2.message.DbException.getJdbcSQLException(DbException.java:514)
+	at org.h2.message.DbException.getJdbcSQLException(DbException.java:489)
+	at org.h2.message.DbException.get(DbException.java:223)
+	at org.h2.message.DbException.get(DbException.java:199)
+	at org.h2.jdbc.JdbcResultSet.getColumnIndex(JdbcResultSet.java:3492)
+	at org.h2.jdbc.JdbcResultSet.getString(JdbcResultSet.java:301)
+	at dao.SolicitacaoDAO.buscarPorProtocolo(SolicitacaoDAO.java:114)
+	at Main.acessarSolicitacaoLogada(Main.java:364)
+	at Main.menuGestor(Main.java:301)
+	at Main.main(Main.java:59)
+2026-04-09 15:03:29.329495-03:00 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Table "USERS" already exists; SQL statement:
+CREATE TABLE users (id INT AUTO_INCREMENT PRIMARY KEY, nome VARCHAR(100) NOT NULL, email VARCHAR(100) NOT NULL UNIQUE, senha VARCHAR(100) NOT NULL, tipo_usuario VARCHAR(30) NOT NULL) [42101-240]2026-04-09 23:14:28.319731-03:00 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Column "atribuido_para" not found [42122-240]
+	at org.h2.message.DbException.getJdbcSQLException(DbException.java:514)
+	at org.h2.message.DbException.getJdbcSQLException(DbException.java:489)
+	at org.h2.message.DbException.get(DbException.java:223)
+	at org.h2.message.DbException.get(DbException.java:199)
+	at org.h2.jdbc.JdbcResultSet.getColumnIndex(JdbcResultSet.java:3492)
+	at org.h2.jdbc.JdbcResultSet.getString(JdbcResultSet.java:301)
+	at dao.SolicitacaoDAO.listarSolicitacoes(SolicitacaoDAO.java:51)
+	at Main.menuGestor(Main.java:270)
+	at Main.main(Main.java:57)

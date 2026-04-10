@@ -35,7 +35,8 @@ public class DataBaseConfig {
                     "status VARCHAR(100), " +
                     "prioridade VARCHAR(50), " +
                     "descricao VARCHAR(255), " +
-                    "usuario_id INT" +
+                    "usuario_id INT,"+
+                    "atribuir_para VARCHAR(100)"+
                     ")";
 
             String sqlHistorico = "CREATE TABLE IF NOT EXISTS historico_status (" +
