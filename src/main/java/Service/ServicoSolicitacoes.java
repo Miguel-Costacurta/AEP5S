@@ -20,7 +20,7 @@ public class ServicoSolicitacoes {
     public void mudarStatus(Solicitacao solicitacao, StatusSolicitacao novoStatus,
                             Usuario responsavel, String observacao) throws SQLException {
 
-        // Observação obrigatória
+
         if (observacao == null || observacao.trim().isEmpty()) {
             throw new IllegalArgumentException("Observação é obrigatória para alterar o status.");
         }
@@ -42,7 +42,7 @@ public class ServicoSolicitacoes {
 
         historicoDAO.registrar(new HistoricoStatus(
                 solicitacao.getSolicitacaoId(), statusAnterior, novoStatus,
-                observacao, responsavel.getUsuarioId()
+                observacao, responsavel.getUsuarioId(), responsavel.getUsuarioNome()
         ));
     }
 

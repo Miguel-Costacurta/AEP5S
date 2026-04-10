@@ -537,7 +537,6 @@ public class Main {
         System.out.println("--------------------------------");
     }
 
-    // ===================== ACOMPANHAR POR PROTOCOLO =====================
 
     private static void acompanharSolicitacao(Scanner scanner, SolicitacaoDAO solicitacaoDAO,
                                               HistoricoStatusDAO historicoDAO) throws SQLException {
@@ -577,7 +576,8 @@ public class Main {
                 System.out.println("  " + h.getDataAlteracao().format(fmt)
                         + " | " + h.getStatusAnterior()
                         + " → " + h.getStatusAtual()
-                        + " | " + h.getObservacao());
+                        + " | " + h.getObservacao()
+                        + " | Atendente: " + h.getNomeResponsavel());
             }
         }
     }

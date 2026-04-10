@@ -29,12 +29,17 @@ public class HistoricoStatusDAO {
     }
 
     public List<HistoricoStatus> buscarPorSolicitacao(int solicitacaoId) throws SQLException {
-        String sql = "SELECT * FROM historico_status WHERE solicitacao_id = ? ORDER BY data_alteracao";
+        String sql = "SELECT hs.*, u.nome " +
+                "FROM historico_status hs " +
+                "JOIN users u ON u.id = hs.usuario_id " +
+                "WHERE hs.solicitacao_id = ? " +
+                "ORDER BY hs.data_alteracao ";
         List<HistoricoStatus> lista = new ArrayList<>();
         try (Connection conn = DataBaseConfig.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
             pstmt.setInt(1, solicitacaoId);
-            try (ResultSet rs = pstmt.executeQuery()) {
+            try (ResultSet rs = pstmt.executeQuery();
+                ) {
                 while (rs.next()) {
                     HistoricoStatus h = new HistoricoStatus();
                     h.setHistoricoId(rs.getInt("id"));
@@ -44,6 +49,7 @@ public class HistoricoStatusDAO {
                     h.setObservacao(rs.getString("observacao"));
                     h.setDataAlteracao(rs.getTimestamp("data_alteracao").toLocalDateTime());
                     h.setUsuarioId(rs.getInt("usuario_id"));
+                    h.setNomeResponsavel(rs.getString("nome"));
                     lista.add(h);
                 }
             }

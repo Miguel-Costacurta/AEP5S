@@ -11,13 +11,14 @@ public class HistoricoStatus {
     private StatusSolicitacao statusAtual;
     private String observacao;
     private LocalDateTime dataAlteracao;
+    private String nomeResponsavel;
 
     private int usuarioId;
 
     public HistoricoStatus(){}
 
     public HistoricoStatus(int solicitacaoId, StatusSolicitacao statusAnterior, StatusSolicitacao statusAtual,
-                            String observacao, int usuarioId){
+                            String observacao, int usuarioId, String nomeResponsavel){
 
         this.solicitacaoId = solicitacaoId;
         this.statusAnterior = statusAnterior;
@@ -25,6 +26,7 @@ public class HistoricoStatus {
         this.observacao = observacao;
         this.usuarioId = usuarioId;
         this.dataAlteracao = LocalDateTime.now();
+        this.nomeResponsavel = nomeResponsavel;
     }
 
     public int getHistoricoId() {
@@ -75,4 +77,7 @@ public class HistoricoStatus {
     public void setUsuarioId(int usuarioId) {
         this.usuarioId = usuarioId;
     }
+
+    public String getNomeResponsavel(){return  nomeResponsavel;}
+    public void setNomeResponsavel(String nomeResponsavel){this.nomeResponsavel = nomeResponsavel;}
 }
