@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="pt-br" xmlns:v-on="http://www.w3.org/1999/xhtml" xmlns:v-bind="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <title>Área do Gestor</title>
+    <link rel="stylesheet" href="css/estilo.css">
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+</head>
+<body>
+<div id="app">
+
+    <div class="navbar">
+        <span class="logo">Central de Solicitações</span>
+        <a href="index-vue.html">Início</a>
+        <a href="solicitar-vue.html">Nova solicitação</a>
+        <a href="acompanhar-vue.html">Acompanhar</a>
+        <a href="atendente-vue.html">Atendente</a>
+        <a href="gestor-vue.html">Gestor</a>
+    </div>
+
+    <h1>Área do Gestor</h1>
+
+    <form v-on:submit.prevent="entrar">
+        <label>Email</label>
+        <input type="email" v-model="email">
+
+        <label>Senha</label>
+        <input type="password" v-model="senha">
+
+        <button type="submit">Entrar</button>
+    </form>
+
+    <p v-if="mensagem">{{ mensagem }}</p>
+
+    <div v-if="logado">
+        <h2>Solicitações Pendentes</h2>
+
+        <div class="card-solicitacao" v-for="s in pendentes" v-bind:key="s.protocolo">
+            <p>Protocolo: {{ s.protocolo }}</p>
+            <p>Tipo: {{ s.tipo }}</p>
+            <p>Descrição: {{ s.descricao }}</p>
+            <p>Status: {{ s.status }}</p>
+            <select v-model="s.status">
+                <option value="PENDENTE">Pendente</option>
+                <option value="EM_ATENDIMENTO">Em atendimento</option>
+                <option value="AGUARDANDO_RESPOSTA">Aguardando resposta</option>
+                <option value="CONCLUIDA">Concluída</option>
+            </select>
+            <button v-on:click="cancelar(s)">Cancelar</button>
+        </div>
+
+        <h2>Cadastrar Funcionário</h2>
+        <form v-on:submit.prevent="cadastrarFuncionario">
+            <label>Nome</label>
+            <input type="text" v-model="nomeFunc">
+
+            <label>Email</label>
+            <input type="email" v-model="emailFunc">
+
+            <label>Senha</label>
+            <input type="password" v-model="senhaFunc">
+
+            <label>Tipo</label>
+            <select v-model="tipoFunc">
+                <option value="USUARIO_ATENDENTE">Atendente</option>
+                <option value="USUARIO_GESTOR">Gestor</option>
+            </select>
+
+            <button type="submit">Cadastrar</button>
+        </form>
+
+        <p v-if="mensagemCadastro">{{ mensagemCadastro }}</p>
+    </div>
+
+</div>
+
+<script>
+    const { createApp } = Vue;
+
+    createApp({
+        data() {
+            return {
+                email: "",
+                senha: "",
+                logado: false,
+                mensagem: "",
+                nomeFunc: "",
+                emailFunc: "",
+                senhaFunc: "",
+                tipoFunc: "USUARIO_ATENDENTE",
+                mensagemCadastro: "",
+                usuarios: [
+                    { email: "gestor@sistema.com", senha: "gestor123", nome: "Gestor" }
+                ],
+                pendentes: [
+                    { protocolo: "OS202561", tipo: "DENUNCIA_BURACO", descricao: "Buraco grande na avenida", status: "PENDENTE" },
+                    { protocolo: "OS202562", tipo: "SOLICITACAO_PODA", descricao: "Árvore cobrindo o poste", status: "PENDENTE" }
+                ]
+            };
+        },
+        methods: {
+            entrar() {
+                const usuario = this.usuarios.find((u) => u.email === this.email && u.senha === this.senha);
+
+                if (this.email === "" || this.senha === "") {
+                    this.mensagem = "Preencha email e senha.";
+                } else if (usuario) {
+                    this.logado = true;
+                    this.mensagem = "";
+                } else {
+                    this.mensagem = "Email ou senha inválidos.";
+                }
+            },
+            cancelar(s) {
+                const observacao = prompt("Observação (obrigatória):");
+                if (observacao === null || observacao.trim() === "") {
+                    return;
+                }
+                s.status = "CANCELADA";
+            },
+            cadastrarFuncionario() {
+                if (this.nomeFunc === "" || this.emailFunc === "" || this.senhaFunc === "") {
+                    this.mensagemCadastro = "Preencha todos os campos.";
+                    return;
+                }
+                this.mensagemCadastro = "Funcionário cadastrado: " + this.nomeFunc + " (" + this.tipoFunc + ")";
+            }
+        }
+    }).mount("#app");
+</script>
+</body>
+</html>

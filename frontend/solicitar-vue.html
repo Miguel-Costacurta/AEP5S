@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="pt-br" xmlns:v-on="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <title>Nova Solicitação</title>
+    <link rel="stylesheet" href="css/estilo.css">
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+</head>
+<body>
+<div id="app">
+
+    <div class="navbar">
+        <span class="logo">Central de Solicitações</span>
+        <a href="index-vue.html">Início</a>
+        <a href="solicitar-vue.html">Nova solicitação</a>
+        <a href="acompanhar-vue.html">Acompanhar</a>
+        <a href="atendente-vue.html">Atendente</a>
+        <a href="gestor-vue.html">Gestor</a>
+    </div>
+
+    <h1>Nova Solicitação</h1>
+    <form v-on:submit.prevent="enviar">
+
+        <label>Você é</label>
+        <select v-model="perfil">
+            <option value="LOGADO">Cadastrado</option>
+            <option value="ANONIMO">Anônimo</option>
+        </select>
+
+        <div v-if="perfil === 'LOGADO'">
+            <label>Nome</label>
+            <input type="text" v-model="nome">
+
+            <label>Email</label>
+            <input type="email" v-model="emailUsuario">
+        </div>
+
+        <label>Tipo</label>
+        <select v-model="tipo">
+            <option value="DENUNCIA_BURACO">Denúncia de buraco</option>
+            <option value="SOLICITACAO_PODA">Solicitação de poda</option>
+            <option value="SOLICITACAO_ARVORE_CAIDA">Remoção de árvore caída</option>
+            <option value="SOLICITACAO_REFORMA">Solicitação de reforma</option>
+            <option value="DENUNCIA_MAUS_TRATOS" v-if="perfil === 'LOGADO'">Denúncia de maus-tratos</option>
+            <option value="SOLICITACAO_ILUMINACAO">Solicitação de iluminação queimada</option>
+        </select>
+
+        <label>Prioridade</label>
+        <select v-model="prioridade">
+            <option value="ALTA">Alta</option>
+            <option value="MEDIA">Média</option>
+            <option value="BAIXA">Baixa</option>
+        </select>
+
+        <label>Descrição</label>
+        <textarea v-model="descricao"></textarea>
+
+        <label>Localização</label>
+        <input type="text" v-model="local">
+
+        <button type="submit">Enviar</button>
+
+    </form>
+
+    <p v-if="mensagem">{{ mensagem }}</p>
+
+</div>
+<script>
+    const { createApp } = Vue;
+
+    createApp({
+        data() {
+            return {
+                perfil: "LOGADO",
+                nome: "",
+                emailUsuario: "",
+                tipo: "DENUNCIA_BURACO",
+                prioridade: "ALTA",
+                descricao: "",
+                local: "",
+                mensagem: ""
+            };
+        },
+        methods: {
+            enviar() {
+                const solicitacao = {
+                    tipoSolicitacao: this.tipo,
+                    prioridade: this.prioridade,
+                    descricao: this.descricao,
+                    localizacao: this.local
+                };
+
+                this.mensagem = "Solicitação enviada: " + this.tipo;
+            }
+        }
+    }).mount("#app");
+</script>
+</body>
+</html>
