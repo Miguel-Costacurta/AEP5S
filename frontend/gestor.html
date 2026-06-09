@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Área do Gestor</title>
+    <link rel="stylesheet" href="css/estilo.css">
+</head>
+<body>
+
+<div class="navbar">
+    <span class="logo">Central de Solicitações</span>
+    <a href="index.html">Início</a>
+    <a href="solicitar.html">Nova solicitação</a>
+    <a href="acompanhar.html">Acompanhar</a>
+    <a href="atendente.html">Atendente</a>
+    <a href="gestor.html">Gestor</a>
+</div>
+
+<h1>Área do Gestor</h1>
+
+<form id="formLogin">
+
+    <label for="email">Email</label>
+    <input type="email" id="email">
+
+    <label for="senha">Senha</label>
+    <input type="password" id="senha">
+
+    <button type="submit">Entrar</button>
+
+</form>
+
+<h2 id="tituloPendentes" style="display: none">Solicitações Pendentes</h2>
+<div id="listaPendentes"></div>
+
+<h2 id="tituloCadastro" style="display: none">Cadastrar Funcionário</h2>
+<form id="formCadastroFuncionario" style="display: none">
+
+    <label for="nomeFunc">Nome</label>
+    <input type="text" id="nomeFunc">
+
+    <label for="emailFunc">Email</label>
+    <input type="email" id="emailFunc">
+
+    <label for="senhaFunc">Senha</label>
+    <input type="password" id="senhaFunc">
+
+    <label for="tipoFunc">Tipo</label>
+    <select id="tipoFunc">
+        <option value="USUARIO_ATENDENTE">Atendente</option>
+        <option value="USUARIO_GESTOR">Gestor</option>
+    </select>
+
+    <button type="submit">Cadastrar</button>
+
+</form>
+
+<div id="resultadoCadastro"></div>
+
+<div id="resultado"></div>
+
+<script src="js/gestor.js"></script>
+</body>
+</html>
