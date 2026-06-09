@@ -3,27 +3,59 @@ package model;
 import enums.Prioridade;
 import enums.StatusSolicitacao;
 import enums.TipoSolicitacao;
+import jakarta.persistence.*;
+import lombok.*;
 
-import java.sql.Date;
 import java.time.LocalDateTime;
 
+@Entity
+@Table(name = "tbl_solicitacao")
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class Solicitacao {
-    private int solicitacaoId;
-    private String solicitacaoProtocolo;
-    private TipoSolicitacao tipoSolicitacao;
-    private StatusSolicitacao statusSolicitacao;
-    private Prioridade prioridade;
-    private String descricao;
-    private String localizacao;
-    private LocalDateTime dataCriacao;
-    private LocalDateTime dataAtualizacao;
-    private LocalDateTime prazo;
-    private int usuarioId;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
+    private Long solicitacaoId;
 
-    public Solicitacao() {}
+    @Column(name = "protocolo", length = 100)
+    private String solicitacaoProtocolo;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "tipo", nullable = false, length = 100)
+    private TipoSolicitacao tipoSolicitacao;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "status", nullable = false, length = 50)
+    private StatusSolicitacao statusSolicitacao;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "prioridade", nullable = false, length = 50)
+    private Prioridade prioridade;
+
+    @Column(name = "descricao", length = 255)
+    private String descricao;
+
+    @Column(name = "localizacao", length = 255)
+    private String localizacao;
+
+    @Column(name = "data_criacao", updatable = false)
+    private LocalDateTime dataCriacao;
+
+    @Column(name = "data_atualizacao")
+    private LocalDateTime dataAtualizacao;
+
+    @Column(name = "prazo")
+    private LocalDateTime prazo;
+
+    @Column(name = "usuario_id", nullable = false)
+    private Long usuarioId;
 
     public Solicitacao(String protocolo, TipoSolicitacao tipoSolicitacao, Prioridade prioridade,
-                       String descricao, String localizacao, int usuarioId) {
+                       String descricao, String localizacao, Long usuarioId) {
         this.solicitacaoProtocolo = protocolo;
         this.tipoSolicitacao = tipoSolicitacao;
         this.statusSolicitacao = StatusSolicitacao.PENDENTE;
@@ -44,39 +76,9 @@ public class Solicitacao {
         return LocalDateTime.now().isAfter(prazo);
     }
 
-    public int getSolicitacaoId() { return solicitacaoId; }
-    public void setSolicitacaoId(int solicitacaoId) { this.solicitacaoId = solicitacaoId; }
-
-    public String getSolicitacaoProtocolo() { return solicitacaoProtocolo; }
-    public void setSolicitacaoProtocolo(String p) { this.solicitacaoProtocolo = p; }
-
-    public TipoSolicitacao getTipoSolicitacao() { return tipoSolicitacao; }
-    public void setTipoSolicitacao(TipoSolicitacao t) { this.tipoSolicitacao = t; }
-
-    public StatusSolicitacao getStatusSolicitacao() { return statusSolicitacao; }
     public void setStatusSolicitacao(StatusSolicitacao s) {
         this.statusSolicitacao = s;
         this.dataAtualizacao = LocalDateTime.now();
     }
 
-    public Prioridade getPrioridade() { return prioridade; }
-    public void setPrioridade(Prioridade prioridade) { this.prioridade = prioridade; }
-
-    public String getDescricao() { return descricao; }
-    public void setDescricao(String descricao) { this.descricao = descricao; }
-
-    public String getLocalizacao() { return localizacao; }
-    public void setLocalizacao(String localizacao) { this.localizacao = localizacao; }
-
-    public LocalDateTime getDataCriacao() { return dataCriacao; }
-    public void setDataCriacao(LocalDateTime dataCriacao) { this.dataCriacao = dataCriacao; }
-
-    public LocalDateTime getDataAtualizacao() { return dataAtualizacao; }
-    public void setDataAtualizacao(LocalDateTime dataAtualizacao) { this.dataAtualizacao = dataAtualizacao; }
-
-    public LocalDateTime getPrazo() { return prazo; }
-    public void setPrazo(LocalDateTime prazo) { this.prazo = prazo; }
-
-    public int getUsuarioId() { return usuarioId; }
-    public void setUsuarioId(int usuarioId) { this.usuarioId = usuarioId; }
 }

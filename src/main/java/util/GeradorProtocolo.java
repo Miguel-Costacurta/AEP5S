@@ -1,6 +1,5 @@
-package Util;
+package util;
 
-import model.Solicitacao;
 import model.Usuario;
 
 import java.time.LocalDateTime;

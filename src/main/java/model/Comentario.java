@@ -1,35 +1,44 @@
 package model;
 
+import jakarta.persistence.*;
+import lombok.*;
+import org.hibernate.annotations.CreationTimestamp;
+
 import java.time.LocalDateTime;
 
+@Entity
+@Table(name = "tbl_comentario")
+@Getter
+@Setter
+@AllArgsConstructor
+@NoArgsConstructor
+@Builder
 public class Comentario {
-    private int comentarioId;
-    private int solicitacaoId;
-    private int usuarioId;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
+    private Long comentarioId;
+
+    // FK para solicitação
+    @Column(name = "solicitacao_id", nullable = false)
+    private Long solicitacaoId;
+
+    // FK para usuário
+    @Column(name = "usuario_id", nullable = false)
+    private Long usuarioId;
+
+    @Column(name = "texto", nullable = false, length = 1000)
     private String texto;
+
+    // @CreationTimestamp: o Hibernate preenche automaticamente na inserção,
+    // sem precisar setar manualmente no construtor
+    @CreationTimestamp
+    @Column(name = "data_criacao", nullable = false, updatable = false)
     private LocalDateTime dataCriacao;
 
-    public Comentario() {}
-
-    public Comentario(int solicitacaoId, int usuarioId, String texto) {
+    public Comentario(Long solicitacaoId, Long usuarioId, String texto) {
         this.solicitacaoId = solicitacaoId;
         this.usuarioId = usuarioId;
         this.texto = texto;
-        this.dataCriacao = LocalDateTime.now();
     }
-
-    public int getComentarioId() { return comentarioId; }
-    public void setComentarioId(int comentarioId) { this.comentarioId = comentarioId; }
-
-    public int getSolicitacaoId() { return solicitacaoId; }
-    public void setSolicitacaoId(int solicitacaoId) { this.solicitacaoId = solicitacaoId; }
-
-    public int getUsuarioId() { return usuarioId; }
-    public void setUsuarioId(int usuarioId) { this.usuarioId = usuarioId; }
-
-    public String getTexto() { return texto; }
-    public void setTexto(String texto) { this.texto = texto; }
-
-    public LocalDateTime getDataCriacao() { return dataCriacao; }
-    public void setDataCriacao(LocalDateTime dataCriacao) { this.dataCriacao = dataCriacao; }
 }
