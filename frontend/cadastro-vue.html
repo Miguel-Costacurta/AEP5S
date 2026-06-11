@@ -52,22 +52,38 @@
             };
         },
         methods: {
-            cadastrar() {
+            async cadastrar() {
                 if (this.nome === "" || this.email === "" || this.senha === "") {
                     this.mensagem = "Preencha todos os campos.";
                     this.cadastrado = false;
                     return;
                 }
 
-                const novoUsuario = {
-                    nome: this.nome,
-                    email: this.email,
-                    senha: this.senha,
-                    tipo: "USUARIO_LOGADO"
-                };
+                try {
+                    const resposta = await fetch("http://localhost:8080/auth/cadastro", {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json"
+                        },
+                        body: JSON.stringify({
+                            usuarioNome: this.nome,
+                            usuarioEmail: this.email,
+                            usuarioSenha: this.senha
+                        })
+                    });
 
-                this.mensagem = "Usuário cadastrado: " + this.nome;
-                this.cadastrado = true;
+                    if (resposta.ok) {
+                        this.mensagem = "Usuário cadastrado com sucesso: " + this.nome;
+                        this.cadastrado = true;
+                    } else {
+                        const erro = await resposta.text();
+                        this.mensagem = "Erro ao cadastrar: " + erro;
+                        this.cadastrado = false;
+                    }
+                } catch (e) {
+                    this.mensagem = "Erro de conexão com o servidor. Detalhe: " + e.message;
+                    this.cadastrado = false;
+                }
             }
         }
     }).mount("#app");

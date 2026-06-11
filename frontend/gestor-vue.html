@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="pt-br" xmlns:v-on="http://www.w3.org/1999/xhtml" xmlns:v-bind="http://www.w3.org/1999/xhtml">
+<html lang="pt-br">
 <head>
     <meta charset="UTF-8">
     <title>Área do Gestor</title>
@@ -20,7 +20,7 @@
 
     <h1>Área do Gestor</h1>
 
-    <form v-on:submit.prevent="entrar">
+    <form v-on:submit.prevent="entrar" v-if="!logado">
         <label>Email</label>
         <input type="email" v-model="email">
 
@@ -33,43 +33,29 @@
     <p v-if="mensagem">{{ mensagem }}</p>
 
     <div v-if="logado">
-        <h2>Solicitações Pendentes</h2>
+        <h2>Todas as Solicitações</h2>
 
-        <div class="card-solicitacao" v-for="s in pendentes" v-bind:key="s.protocolo">
-            <p>Protocolo: {{ s.protocolo }}</p>
-            <p>Tipo: {{ s.tipo }}</p>
+        <div class="card-solicitacao" v-for="s in solicitacoes" v-bind:key="s.solicitacaoId">
+            <p>Protocolo: {{ s.solicitacaoProtocolo }}</p>
+            <p>Tipo: {{ s.tipoSolicitacao }}</p>
             <p>Descrição: {{ s.descricao }}</p>
-            <p>Status: {{ s.status }}</p>
-            <select v-model="s.status">
-                <option value="PENDENTE">Pendente</option>
+            <p>Status atual: <strong>{{ s.statusSolicitacao }}</strong></p>
+
+            <label>Novo status</label>
+            <select v-model="s.novoStatus">
                 <option value="EM_ATENDIMENTO">Em atendimento</option>
                 <option value="AGUARDANDO_RESPOSTA">Aguardando resposta</option>
                 <option value="CONCLUIDA">Concluída</option>
+                <option value="CANCELADA">Cancelada</option>
             </select>
-            <button v-on:click="cancelar(s)">Cancelar</button>
+
+            <label>Observação (obrigatória)</label>
+            <input type="text" v-model="s.observacao" placeholder="Motivo da mudança">
+
+            <button v-on:click="mudarStatus(s)">Atualizar status</button>
         </div>
 
-        <h2>Cadastrar Funcionário</h2>
-        <form v-on:submit.prevent="cadastrarFuncionario">
-            <label>Nome</label>
-            <input type="text" v-model="nomeFunc">
-
-            <label>Email</label>
-            <input type="email" v-model="emailFunc">
-
-            <label>Senha</label>
-            <input type="password" v-model="senhaFunc">
-
-            <label>Tipo</label>
-            <select v-model="tipoFunc">
-                <option value="USUARIO_ATENDENTE">Atendente</option>
-                <option value="USUARIO_GESTOR">Gestor</option>
-            </select>
-
-            <button type="submit">Cadastrar</button>
-        </form>
-
-        <p v-if="mensagemCadastro">{{ mensagemCadastro }}</p>
+        <p v-if="solicitacoes.length === 0">Nenhuma solicitação encontrada.</p>
     </div>
 
 </div>
@@ -84,46 +70,92 @@
                 senha: "",
                 logado: false,
                 mensagem: "",
-                nomeFunc: "",
-                emailFunc: "",
-                senhaFunc: "",
-                tipoFunc: "USUARIO_ATENDENTE",
-                mensagemCadastro: "",
-                usuarios: [
-                    { email: "gestor@sistema.com", senha: "gestor123", nome: "Gestor" }
-                ],
-                pendentes: [
-                    { protocolo: "OS202561", tipo: "DENUNCIA_BURACO", descricao: "Buraco grande na avenida", status: "PENDENTE" },
-                    { protocolo: "OS202562", tipo: "SOLICITACAO_PODA", descricao: "Árvore cobrindo o poste", status: "PENDENTE" }
-                ]
+                token: "",
+                solicitacoes: []
             };
         },
         methods: {
-            entrar() {
-                const usuario = this.usuarios.find((u) => u.email === this.email && u.senha === this.senha);
-
+            async entrar() {
                 if (this.email === "" || this.senha === "") {
                     this.mensagem = "Preencha email e senha.";
-                } else if (usuario) {
-                    this.logado = true;
-                    this.mensagem = "";
-                } else {
-                    this.mensagem = "Email ou senha inválidos.";
-                }
-            },
-            cancelar(s) {
-                const observacao = prompt("Observação (obrigatória):");
-                if (observacao === null || observacao.trim() === "") {
                     return;
                 }
-                s.status = "CANCELADA";
+
+                try {
+                    const resposta = await fetch("http://localhost:8080/auth/login", {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({
+                            usuarioEmail: this.email,
+                            usuarioSenha: this.senha
+                        })
+                    });
+
+                    if (resposta.ok) {
+                        const dados = await resposta.json();
+                        this.token = dados.token;
+                        this.logado = true;
+                        this.mensagem = "";
+                        this.carregarSolicitacoes();
+                    } else {
+                        this.mensagem = "Email ou senha inválidos.";
+                    }
+                } catch (e) {
+                    this.mensagem = "Erro de conexão: " + e.message;
+                }
             },
-            cadastrarFuncionario() {
-                if (this.nomeFunc === "" || this.emailFunc === "" || this.senhaFunc === "") {
-                    this.mensagemCadastro = "Preencha todos os campos.";
+
+            async carregarSolicitacoes() {
+                try {
+                    const resposta = await fetch("http://localhost:8080/solicitacoes", {
+                        method: "GET",
+                        headers: { "Authorization": "Bearer " + this.token }
+                    });
+
+                    if (resposta.ok) {
+                        const lista = await resposta.json();
+                        this.solicitacoes = lista.map(function(s) {
+                            s.novoStatus = "EM_ATENDIMENTO";
+                            s.observacao = "";
+                            return s;
+                        });
+                    } else {
+                        this.mensagem = "Erro ao carregar solicitações (sem permissão?).";
+                    }
+                } catch (e) {
+                    this.mensagem = "Erro de conexão ao carregar: " + e.message;
+                }
+            },
+
+            async mudarStatus(s) {
+                if (s.observacao === "") {
+                    this.mensagem = "A observação é obrigatória para mudar o status.";
                     return;
                 }
-                this.mensagemCadastro = "Funcionário cadastrado: " + this.nomeFunc + " (" + this.tipoFunc + ")";
+
+                try {
+                    const resposta = await fetch("http://localhost:8080/solicitacoes/" + s.solicitacaoId + "/status", {
+                        method: "PATCH",
+                        headers: {
+                            "Content-Type": "application/json",
+                            "Authorization": "Bearer " + this.token
+                        },
+                        body: JSON.stringify({
+                            novoStatus: s.novoStatus,
+                            observacao: s.observacao
+                        })
+                    });
+
+                    if (resposta.ok) {
+                        this.mensagem = "Status atualizado para " + s.novoStatus + "!";
+                        this.carregarSolicitacoes();
+                    } else {
+                        const erro = await resposta.text();
+                        this.mensagem = "Erro ao mudar status: " + erro;
+                    }
+                } catch (e) {
+                    this.mensagem = "Erro de conexão: " + e.message;
+                }
             }
         }
     }).mount("#app");

@@ -13,9 +13,9 @@ public enum StatusSolicitacao {
     private Set<StatusSolicitacao> fluxoPermitido;
 
     static {
-        PENDENTE.fluxoPermitido           = EnumSet.of(EM_ATENDIMENTO);
-        EM_ATENDIMENTO.fluxoPermitido     = EnumSet.of(AGUARDANDO_RESPOSTA, CONCLUIDA);
-        AGUARDANDO_RESPOSTA.fluxoPermitido = EnumSet.of(EM_ATENDIMENTO, CONCLUIDA);
+        PENDENTE.fluxoPermitido           = EnumSet.of(EM_ATENDIMENTO, CANCELADA);
+        EM_ATENDIMENTO.fluxoPermitido     = EnumSet.of(AGUARDANDO_RESPOSTA, CONCLUIDA, CANCELADA);
+        AGUARDANDO_RESPOSTA.fluxoPermitido = EnumSet.of(EM_ATENDIMENTO, CONCLUIDA, CANCELADA);
         CONCLUIDA.fluxoPermitido          = EnumSet.noneOf(StatusSolicitacao.class);
         CANCELADA.fluxoPermitido          = EnumSet.noneOf(StatusSolicitacao.class);
     }

@@ -37,3 +37,12 @@ build/
 
 ### Mac OS ###
 .DS_Store
+
+# Banco H2 (gerado ao rodar, não vai pro Git)
+data/
+
+# Configs do IntelliJ (específicas da máquina)
+.idea/
+
+# Compilados
+target/

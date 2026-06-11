@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="pt-br" xmlns:v-on="http://www.w3.org/1999/xhtml">
+<html lang="pt-br">
 <head>
     <meta charset="UTF-8">
     <title>Nova Solicitação</title>
@@ -19,21 +19,27 @@
     </div>
 
     <h1>Nova Solicitação</h1>
-    <form v-on:submit.prevent="enviar">
 
-        <label>Você é</label>
-        <select v-model="perfil">
-            <option value="LOGADO">Cadastrado</option>
-            <option value="ANONIMO">Anônimo</option>
-        </select>
-
-        <div v-if="perfil === 'LOGADO'">
-            <label>Nome</label>
-            <input type="text" v-model="nome">
-
+    <div v-if="!logado && !anonimo">
+        <h2>Faça login para solicitar</h2>
+        <form v-on:submit.prevent="entrar">
             <label>Email</label>
-            <input type="email" v-model="emailUsuario">
-        </div>
+            <input type="email" v-model="email">
+
+            <label>Senha</label>
+            <input type="password" v-model="senha">
+
+            <button type="submit">Entrar</button>
+        </form>
+        <p v-if="mensagem">{{ mensagem }}</p>
+
+        <p>Ou, se preferir, faça uma solicitação sem se identificar:</p>
+        <button v-on:click="ativarAnonimo">Solicitar de forma anônima</button>
+    </div>
+
+    <form v-on:submit.prevent="enviar" v-if="logado || anonimo">
+
+        <h2 v-if="anonimo">Solicitação Anônima</h2>
 
         <label>Tipo</label>
         <select v-model="tipo">
@@ -41,7 +47,7 @@
             <option value="SOLICITACAO_PODA">Solicitação de poda</option>
             <option value="SOLICITACAO_ARVORE_CAIDA">Remoção de árvore caída</option>
             <option value="SOLICITACAO_REFORMA">Solicitação de reforma</option>
-            <option value="DENUNCIA_MAUS_TRATOS" v-if="perfil === 'LOGADO'">Denúncia de maus-tratos</option>
+            <option value="DENUNCIA_MAUS_TRATOS" v-if="logado">Denúncia de maus-tratos</option>
             <option value="SOLICITACAO_ILUMINACAO">Solicitação de iluminação queimada</option>
         </select>
 
@@ -62,7 +68,7 @@
 
     </form>
 
-    <p v-if="mensagem">{{ mensagem }}</p>
+    <p v-if="(logado || anonimo) && mensagem">{{ mensagem }}</p>
 
 </div>
 <script>
@@ -71,9 +77,11 @@
     createApp({
         data() {
             return {
-                perfil: "LOGADO",
-                nome: "",
-                emailUsuario: "",
+                email: "",
+                senha: "",
+                logado: false,
+                anonimo: false,
+                token: "",
                 tipo: "DENUNCIA_BURACO",
                 prioridade: "ALTA",
                 descricao: "",
@@ -82,15 +90,79 @@
             };
         },
         methods: {
-            enviar() {
-                const solicitacao = {
+            ativarAnonimo() {
+                this.anonimo = true;
+                this.mensagem = "";
+            },
+
+            async entrar() {
+                if (this.email === "" || this.senha === "") {
+                    this.mensagem = "Preencha email e senha.";
+                    return;
+                }
+
+                try {
+                    const resposta = await fetch("http://localhost:8080/auth/login", {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({
+                            usuarioEmail: this.email,
+                            usuarioSenha: this.senha
+                        })
+                    });
+
+                    if (resposta.ok) {
+                        const dados = await resposta.json();
+                        this.token = dados.token;
+                        this.logado = true;
+                        this.mensagem = "";
+                    } else {
+                        this.mensagem = "Email ou senha inválidos.";
+                    }
+                } catch (e) {
+                    this.mensagem = "Erro de conexão: " + e.message;
+                }
+            },
+
+            async enviar() {
+                const corpo = JSON.stringify({
                     tipoSolicitacao: this.tipo,
                     prioridade: this.prioridade,
                     descricao: this.descricao,
                     localizacao: this.local
-                };
+                });
 
-                this.mensagem = "Solicitação enviada: " + this.tipo;
+                let url;
+                let headers;
+
+                if (this.anonimo) {
+                    url = "http://localhost:8080/solicitacoes/anonima";
+                    headers = { "Content-Type": "application/json" };
+                } else {
+                    url = "http://localhost:8080/solicitacoes";
+                    headers = {
+                        "Content-Type": "application/json",
+                        "Authorization": "Bearer " + this.token
+                    };
+                }
+
+                try {
+                    const resposta = await fetch(url, {
+                        method: "POST",
+                        headers: headers,
+                        body: corpo
+                    });
+
+                    if (resposta.ok) {
+                        const criada = await resposta.json();
+                        this.mensagem = "Solicitação criada! Protocolo: " + criada.solicitacaoProtocolo;
+                    } else {
+                        const erro = await resposta.text();
+                        this.mensagem = "Erro ao criar: " + erro;
+                    }
+                } catch (e) {
+                    this.mensagem = "Erro de conexão: " + e.message;
+                }
             }
         }
     }).mount("#app");

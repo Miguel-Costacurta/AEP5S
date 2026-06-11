@@ -38,7 +38,21 @@ public class ServicoSolicitacoes {
 
         String protocolo = new GeradorProtocolo(solicitante).getProtocolo();
         solicitacao.setSolicitacaoProtocolo(protocolo);
+        solicitacao.setStatusSolicitacao(StatusSolicitacao.PENDENTE);
         solicitacao.setUsuarioId(solicitante.getUsuarioId());
+
+        return solicitacaoRepository.save(solicitacao);
+    }
+
+    @Transactional
+    public Solicitacao criarSolicitacaoAnonima(Solicitacao solicitacao){
+        java.time.LocalDateTime data = java.time.LocalDateTime.now();
+        String protocolo = "OS" + data.getYear() + data.getMonthValue() + data.getDayOfMonth()
+                + "ANON" + System.currentTimeMillis() % 100000;
+
+        solicitacao.setSolicitacaoProtocolo(protocolo);
+        solicitacao.setStatusSolicitacao(StatusSolicitacao.PENDENTE);
+        solicitacao.setUsuarioId(0L);
 
         return solicitacaoRepository.save(solicitacao);
     }

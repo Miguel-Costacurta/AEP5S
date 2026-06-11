@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="pt-br" xmlns:v-bind="http://www.w3.org/1999/xhtml" xmlns:v-on="http://www.w3.org/1999/xhtml">
+<html lang="pt-br" xmlns:v-on="http://www.w3.org/1999/xhtml" xmlns:v-bind="http://www.w3.org/1999/xhtml">
 <head>
     <meta charset="UTF-8">
     <title>Área do Atendente</title>
@@ -8,20 +8,20 @@
 </head>
 
 <body>
-    <div id="app">
+<div id="app">
 
-        <div class="navbar">
-            <span class="logo">Central de Solicitações</span>
-            <a href="index-vue.html">Início</a>
-            <a href="solicitar-vue.html">Nova solicitação</a>
-            <a href="acompanhar-vue.html">Acompanhar</a>
-            <a href="atendente-vue.html">Atendente</a>
-            <a href="gestor-vue.html">Gestor</a>
-        </div>
+    <div class="navbar">
+        <span class="logo">Central de Solicitações</span>
+        <a href="index-vue.html">Início</a>
+        <a href="solicitar-vue.html">Nova solicitação</a>
+        <a href="acompanhar-vue.html">Acompanhar</a>
+        <a href="atendente-vue.html">Atendente</a>
+        <a href="gestor-vue.html">Gestor</a>
+    </div>
 
     <h1>Área do Atendente</h1>
 
-    <form v-on:submit.prevent="entrar">
+    <form v-on:submit.prevent="entrar" v-if="!logado">
         <label>Email</label>
         <input type="email" v-model="email">
 
@@ -36,18 +36,28 @@
     <div v-if="logado">
         <h2>Solicitações Pendentes</h2>
 
-        <div class="card-solicitacao" v-for="s in pendentes" v-bind:key="s.protocolo">
-            <p>Protocolo: {{ s.protocolo }}</p>
-            <p>Tipo: {{ s.tipo }}</p>
+        <div class="card-solicitacao" v-for="s in pendentes" v-bind:key="s.solicitacaoId">
+            <p>Protocolo: {{ s.solicitacaoProtocolo }}</p>
+            <p>Tipo: {{ s.tipoSolicitacao }}</p>
             <p>Descrição: {{ s.descricao }}</p>
-            <p>Status: {{ s.status }}</p>
-            <select v-model="s.status">
+            <p>Status atual: <strong>{{ s.statusSolicitacao }}</strong></p>
+
+            <label>Novo status</label>
+            <select v-model="s.novoStatus">
                 <option value="PENDENTE">Pendente</option>
                 <option value="EM_ATENDIMENTO">Em atendimento</option>
                 <option value="AGUARDANDO_RESPOSTA">Aguardando resposta</option>
                 <option value="CONCLUIDA">Concluída</option>
+                <option value="CANCELADA">Cancelada</option>
             </select>
+
+            <label>Observação (obrigatória)</label>
+            <input type="text" v-model="s.observacao" placeholder="Motivo da mudança">
+
+            <button v-on:click="mudarStatus(s)">Atualizar status</button>
         </div>
+
+        <p v-if="pendentes.length === 0">Nenhuma solicitação encontrada.</p>
     </div>
 
 </div>
@@ -62,26 +72,92 @@
                 senha: "",
                 logado: false,
                 mensagem: "",
-                usuarios: [
-                    { email: "atendente@sistema.com", senha: "atendente123", nome: "Atendente" }
-                ],
-                pendentes: [
-                    { protocolo: "OS202561", tipo: "DENUNCIA_BURACO", descricao: "Buraco grande na avenida", status: "PENDENTE" },
-                    { protocolo: "OS202562", tipo: "SOLICITACAO_PODA", descricao: "Árvore cobrindo o poste", status: "PENDENTE" }
-                ]
+                token: "",
+                pendentes: []
             };
         },
         methods: {
-            entrar() {
-                const usuario = this.usuarios.find((u) => u.email === this.email && u.senha === this.senha);
-
+            async entrar() {
                 if (this.email === "" || this.senha === "") {
                     this.mensagem = "Preencha email e senha.";
-                } else if (usuario) {
-                    this.logado = true;
-                    this.mensagem = "";
-                } else {
-                    this.mensagem = "Email ou senha inválidos.";
+                    return;
+                }
+
+                try {
+                    const resposta = await fetch("http://localhost:8080/auth/login", {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({
+                            usuarioEmail: this.email,
+                            usuarioSenha: this.senha
+                        })
+                    });
+
+                    if (resposta.ok) {
+                        const dados = await resposta.json();
+                        this.token = dados.token;
+                        this.logado = true;
+                        this.mensagem = "";
+                        this.carregarPendentes();
+                    } else {
+                        this.mensagem = "Email ou senha inválidos.";
+                    }
+                } catch (e) {
+                    this.mensagem = "Erro de conexão: " + e.message;
+                }
+            },
+
+            async carregarPendentes() {
+                try {
+                    const resposta = await fetch("http://localhost:8080/solicitacoes", {
+                        method: "GET",
+                        headers: { "Authorization": "Bearer " + this.token }
+                    });
+
+                    if (resposta.ok) {
+                        const lista = await resposta.json();
+                        // adiciona campos auxiliares pra cada solicitação (status novo e observação)
+                        this.pendentes = lista.map(function(s) {
+                            s.novoStatus = s.statusSolicitacao;
+                            s.observacao = "";
+                            return s;
+                        });
+                    } else {
+                        this.mensagem = "Erro ao carregar solicitações (sem permissão?).";
+                    }
+                } catch (e) {
+                    this.mensagem = "Erro de conexão ao carregar: " + e.message;
+                }
+            },
+
+            async mudarStatus(s) {
+                if (s.observacao === "") {
+                    this.mensagem = "A observação é obrigatória para mudar o status.";
+                    return;
+                }
+
+                try {
+                    const resposta = await fetch("http://localhost:8080/solicitacoes/" + s.solicitacaoId + "/status", {
+                        method: "PATCH",
+                        headers: {
+                            "Content-Type": "application/json",
+                            "Authorization": "Bearer " + this.token
+                        },
+                        body: JSON.stringify({
+                            novoStatus: s.novoStatus,
+                            observacao: s.observacao
+                        })
+                    });
+
+                    if (resposta.ok) {
+                        this.mensagem = "Status atualizado para " + s.novoStatus + "!";
+                        this.carregarPendentes(); // recarrega a lista pra mostrar o novo status
+                    } else {
+                        const erro = await resposta.text();
+                        this.mensagem = "Erro ao mudar status: " + erro;
+                    }
+                } catch (e) {
+                    this.mensagem = "Erro de conexão: " + e.message;
                 }
             }
         }

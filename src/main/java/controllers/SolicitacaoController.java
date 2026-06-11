@@ -39,6 +39,12 @@ public class SolicitacaoController {
         return ResponseEntity.status(HttpStatus.CREATED).body(criada);
     }
 
+    @PostMapping("/anonima")
+    public ResponseEntity<Solicitacao> criarAnonima(@RequestBody Solicitacao solicitacao){
+        Solicitacao criada = servicoSolicitacoes.criarSolicitacaoAnonima(solicitacao);
+        return ResponseEntity.status(HttpStatus.CREATED).body(criada);
+    }
+
     @GetMapping
     @PreAuthorize("hasAnyRole('USUARIO_ATENDENTE', 'USUARIO_GESTOR')")
     public ResponseEntity<List<Solicitacao>> listarTodas(){
@@ -67,13 +73,13 @@ public class SolicitacaoController {
         List<Solicitacao> resultado;
 
         if (localizacao != null) {
-            resultado = solicitacaoRepository.findByLocalizacaoContainignIgnoreCase(localizacao);
+            resultado = solicitacaoRepository.findByLocalizacaoContainingIgnoreCase(localizacao);
         } else if (status != null && prioridade != null) {
             resultado = solicitacaoRepository.findByStatusSolicitacaoAndPrioridade(status, prioridade);
         } else if (status != null) {
             resultado = solicitacaoRepository.findByStatusSolicitacao(status);
         } else if (prioridade != null) {
-            resultado = solicitacaoRepository.findByPrioridadeSolicitacao(prioridade);
+            resultado = solicitacaoRepository.findByPrioridade(prioridade);
         } else if (tipo != null) {
             resultado = solicitacaoRepository.findByTipoSolicitacao(tipo);
         } else {
