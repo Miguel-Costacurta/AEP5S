@@ -9,5 +9,4 @@ import java.util.List;
 @Repository
 public interface IComentarioRepository extends JpaRepository<Comentario,Long> {
     List<Comentario> findBySolicitacaoIdOrderByDataCriacaoAsc(Long solicitacaoId);
-
 }

@@ -16,7 +16,6 @@ public interface ISolicitacaoRepository extends JpaRepository<Solicitacao, Long>
     List<Solicitacao> findByStatusSolicitacao(StatusSolicitacao status);
     List<Solicitacao> findByPrioridade(Prioridade prioridade);
     List<Solicitacao> findByTipoSolicitacao(TipoSolicitacao tipoSolicitacao);
-    List<Solicitacao> findByUsuarioId(Long usuarioId);
 
     Optional<Solicitacao> findBySolicitacaoProtocolo(String protocolo);
 
